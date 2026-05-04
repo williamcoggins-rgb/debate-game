@@ -210,6 +210,7 @@
     align-items: center;
     gap: 0.75rem 1rem;
     padding: 0 1rem;
+    padding-right: 0.5rem;
   }
   .teams-row { display: contents; }
   .center { grid-column: 2; grid-row: 1 / span 2; align-self: stretch; }
@@ -230,7 +231,9 @@
     gap: 0.55rem;
     position: relative;
     overflow: hidden;
+    width: 100%;
     max-width: 100%;
+    box-sizing: border-box;
     box-shadow: 0 0 14px -8px var(--c) inset, 0 0 6px -2px var(--c);
   }
   .team::before {
