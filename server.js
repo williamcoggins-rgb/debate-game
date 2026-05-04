@@ -6,22 +6,35 @@ const PORT = process.env.PORT || 3000;
 
 const PHASES = [
   { key: 'prep', label: 'Preparation', seconds: 180 },
-  { key: 'pro', label: 'Pro Argument', seconds: 120 },
-  { key: 'con', label: 'Con Argument', seconds: 120 },
+  { key: 'speaking', label: 'Speaking', seconds: 120 },
   { key: 'rebuttal', label: 'Rebuttal', seconds: 90 },
-  { key: 'vote', label: 'Vote & Score', seconds: 60 },
+  { key: 'huddle', label: 'Huddle', seconds: 60 },
+  { key: 'vote', label: 'Vote', seconds: 60 },
 ];
 
 const TOTAL_ROUNDS = 3;
 
+const TEAMS = [
+  { key: 'aqua',    name: 'AQUA',    tag: 'TIDAL CORE',  color: '#00f5ff' },
+  { key: 'atlas',   name: 'ATLAS',   tag: 'RED CORE',    color: '#ff00aa' },
+  { key: 'viper',   name: 'VIPER',   tag: 'VENOM SQUAD', color: '#aaff00' },
+  { key: 'phoenix', name: 'PHOENIX', tag: 'EMBER WING',  color: '#ffaa00' },
+];
+const TEAM_KEYS = TEAMS.map(t => t.key);
+
 const defaultScenario = () =>
   'Should students be allowed to use AI assistants on homework assignments?';
+
+const initialScores = () =>
+  TEAM_KEYS.reduce((o, k) => (o[k] = 0, o), {});
 
 const initialState = () => ({
   round: 1,
   phaseIndex: 0,
   scenario: defaultScenario(),
-  scores: { pro: 0, con: 0 },
+  scores: initialScores(),
+  streaks: initialScores(),
+  lastScored: null,
   timer: { running: false, endsAt: null, remaining: PHASES[0].seconds },
 });
 
@@ -48,7 +61,10 @@ function publicState() {
     phase: currentPhase(),
     phases: PHASES,
     scenario: state.scenario,
+    teams: TEAMS,
     scores: state.scores,
+    streaks: state.streaks,
+    lastScored: state.lastScored,
     timer: {
       running: state.timer.running,
       remaining: computeRemaining(),
@@ -60,9 +76,7 @@ function publicState() {
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.get('/api/state', (_req, res) => {
-  res.json(publicState());
-});
+app.get('/api/state', (_req, res) => res.json(publicState()));
 
 app.post('/api/scenario', (req, res) => {
   const { scenario } = req.body || {};
@@ -116,13 +130,25 @@ app.post('/api/timer/reset', (_req, res) => {
 });
 
 app.post('/api/score', (req, res) => {
-  const { side, delta } = req.body || {};
-  if (!['pro', 'con'].includes(side)) {
-    return res.status(400).json({ error: 'side must be pro or con' });
+  const { team, side, delta } = req.body || {};
+  const key = team || side;
+  if (!TEAM_KEYS.includes(key)) {
+    return res.status(400).json({ error: `team must be one of ${TEAM_KEYS.join(', ')}` });
   }
   const d = Number(delta);
   if (!Number.isFinite(d)) return res.status(400).json({ error: 'delta required' });
-  state.scores[side] = Math.max(0, state.scores[side] + d);
+
+  const prev = state.scores[key];
+  state.scores[key] = Math.max(0, prev + d);
+
+  if (d > 0) {
+    state.streaks[key] = (state.lastScored === key ? state.streaks[key] : 0) + 1;
+    for (const k of TEAM_KEYS) if (k !== key) state.streaks[k] = 0;
+    state.lastScored = key;
+  } else if (d < 0 && state.scores[key] < prev) {
+    state.streaks[key] = 0;
+  }
+
   res.json(publicState());
 });
 
@@ -132,5 +158,5 @@ app.post('/api/reset', (_req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`Debate game running on port ${PORT}`);
+  console.log(`Debate Arena running on port ${PORT}`);
 });
