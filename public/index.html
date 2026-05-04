@@ -503,6 +503,9 @@
     background: var(--panel);
     border: 1px solid var(--border);
     border-radius: 14px;
+    margin-top: 1.5rem;
+    position: relative;
+    z-index: 2;
   }
   .fg-tabs {
     display: flex;
@@ -650,7 +653,6 @@
           </svg>
           <div class="timer-display">
             <div class="digits" id="timerDigits">3:00</div>
-            <div class="sub" id="timerSub">PREPARATION</div>
           </div>
         </div>
       </div>
@@ -823,7 +825,6 @@
 
     // Phase
     document.getElementById('nowPhase').textContent = s.phase.label.toUpperCase();
-    document.getElementById('timerSub').textContent = s.phase.label.toUpperCase();
 
     // Topic
     const ta = document.getElementById('scenario');
