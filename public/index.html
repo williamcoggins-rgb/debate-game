@@ -8,88 +8,102 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
+  /* ==========================================================
+     DEBATE ARENA — single 100vh, no scroll, 4 rows:
+       1. HUD          (auto)
+       2. Topic        (auto)
+       3. Arena        (1fr — fills rest, 3-col)
+       4. Phase nav    (auto, full width, anchored bottom)
+     Team cards: rank badge + name + tag, SCORE label,
+                 big digits, -1 / +1, WINS / STREAK / RANK.
+     ========================================================== */
+
   :root {
-    --bg: #05060f;
-    --bg-2: #0a0d1f;
-    --panel: #0f1226;
-    --panel-2: #161a36;
-    --border: #232850;
-    --text: #f5f7ff;
-    --muted: #7d85b3;
-    --cyan: #00f5ff;
-    --magenta: #ff00aa;
-    --lime: #aaff00;
-    --amber: #ffaa00;
-    --green: #4ade80;
-    --red: #ef4444;
-    --purple: #8b5cf6;
+    --bg:        #05060f;
+    --panel:     #0e1226;
+    --panel-2:   #161a36;
+    --border:    #232850;
+    --text:      #f5f7ff;
+    --muted:     #7d85b3;
+
+    --cyan:      #00f5ff;
+    --magenta:   #ff00aa;
+    --lime:      #aaff00;
+    --amber:     #ffaa00;
+    --green:     #4ade80;
+    --red:       #ef4444;
+    --purple:    #8b5cf6;
   }
-  * { box-sizing: border-box; }
+
+  *, *::before, *::after { box-sizing: border-box; }
+
   html, body {
-    margin: 0; padding: 0;
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    width: 100vw;
+    overflow: hidden;
     background: var(--bg);
     color: var(--text);
     font-family: "Space Grotesk", system-ui, sans-serif;
-    height: 100%;
-    overflow-x: hidden;
-  }
-  body {
-    background:
-      radial-gradient(1200px 600px at 15% -10%, rgba(255, 0, 170, 0.08), transparent 60%),
-      radial-gradient(1000px 600px at 85% 110%, rgba(255, 170, 0, 0.08), transparent 60%),
-      radial-gradient(900px 700px at 50% 50%, rgba(0, 245, 255, 0.04), transparent 70%),
-      var(--bg);
-    min-height: 100vh;
-    padding: 1.2vh 1.4vw;
-    padding-bottom: calc(1.2vh + 72px);
-    display: flex;
-    flex-direction: column;
-    gap: 1vh;
-    position: relative;
   }
 
-  /* ========== HUD ========== */
+  body {
+    background:
+      radial-gradient(900px 500px at 18% -10%, rgba(255, 0, 170, 0.10), transparent 60%),
+      radial-gradient(900px 500px at 82% 110%, rgba(255, 170, 0, 0.10), transparent 60%),
+      radial-gradient(800px 600px at 50% 50%, rgba(0, 245, 255, 0.04), transparent 70%),
+      var(--bg);
+    display: grid;
+    grid-template-rows: auto auto 1fr auto;
+    gap: 0.7vh;
+    padding: 0.8vh 1vw;
+  }
+
+  /* ============================== HUD ============================== */
   .hud {
     display: grid;
     grid-template-columns: auto auto 1fr auto auto;
     align-items: center;
     gap: 1.2rem;
-    background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0));
+    padding: 0.55rem 1rem;
     border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 0.7rem 1.2rem;
+    border-radius: 12px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0));
   }
-  .logo { display: flex; align-items: center; gap: 0.8rem; }
-  .logo-mark { width: 46px; height: 46px; filter: drop-shadow(0 0 5px rgba(0, 245, 255, 0.45)); }
-  .logo-text { display: flex; flex-direction: column; line-height: 1; }
+  .logo { display: flex; align-items: center; gap: 0.7rem; }
+  .logo-mark { width: 40px; height: 40px; filter: drop-shadow(0 0 4px rgba(0, 245, 255, 0.4)); }
+  .logo-text { line-height: 1; }
   .logo-text .title {
     font-family: "Orbitron", monospace;
     font-weight: 900;
-    font-size: 1.45rem;
+    font-size: 1.3rem;
     letter-spacing: 0.18em;
   }
   .logo-text .sub {
-    font-size: 0.72rem;
+    font-size: 0.65rem;
     color: var(--muted);
     letter-spacing: 0.3em;
     margin-top: 0.3rem;
     text-transform: uppercase;
   }
+
   .badge-match {
-    display: inline-flex; align-items: center; gap: 0.6rem;
-    padding: 0.55rem 1.1rem;
+    display: inline-flex; align-items: center; gap: 0.55rem;
+    padding: 0.4rem 1rem;
     border-radius: 999px;
     background: rgba(74, 222, 128, 0.08);
     border: 1px solid rgba(74, 222, 128, 0.45);
     color: var(--green);
     font-family: "Orbitron", monospace;
     font-weight: 700;
-    font-size: 0.78rem;
+    font-size: 0.72rem;
     letter-spacing: 0.2em;
     text-transform: uppercase;
+    justify-self: center;
   }
   .pulse-dot {
-    width: 9px; height: 9px; border-radius: 50%;
+    width: 8px; height: 8px; border-radius: 50%;
     background: var(--green);
     animation: pulse 1.4s infinite;
   }
@@ -98,56 +112,58 @@
     70%  { box-shadow: 0 0 0 6px rgba(74, 222, 128, 0); }
     100% { box-shadow: 0 0 0 0 rgba(74, 222, 128, 0); }
   }
-  .hype { display: flex; align-items: center; gap: 0.7rem; justify-self: end; min-width: 260px; }
-  .hype .label {
-    font-family: "Orbitron", monospace;
-    font-size: 0.72rem; letter-spacing: 0.25em; color: var(--muted);
-  }
+
+  .hype { display: flex; align-items: center; gap: 0.6rem; min-width: 220px; justify-self: end; }
+  .hype .label { font-family: "Orbitron", monospace; font-size: 0.65rem; letter-spacing: 0.25em; color: var(--muted); }
   .hype-bar {
-    flex: 1; height: 10px;
+    flex: 1; height: 8px; min-width: 100px;
     background: rgba(255,255,255,0.06);
-    border-radius: 999px; overflow: hidden;
+    border-radius: 999px;
     border: 1px solid var(--border);
-    min-width: 130px;
+    overflow: hidden;
   }
   .hype-bar > div {
     height: 100%;
     background: linear-gradient(90deg, var(--magenta), var(--purple), var(--cyan));
-    box-shadow: 0 0 6px rgba(255,0,170,0.35);
     transition: width 0.5s ease;
   }
-  .hype .pct { font-family: "Orbitron", monospace; font-weight: 700; font-size: 1rem; min-width: 3.5ch; text-align: right; }
+  .hype .pct {
+    font-family: "Orbitron", monospace; font-weight: 700; font-size: 0.85rem;
+    min-width: 3.2ch; text-align: right;
+  }
+
   .clock {
-    display: flex; align-items: center; gap: 0.6rem;
-    padding: 0.4rem 0.9rem;
+    display: flex; align-items: center; gap: 0.5rem;
+    padding: 0.3rem 0.8rem;
     border: 1px solid var(--border);
-    border-radius: 10px;
+    border-radius: 9px;
     background: rgba(255,255,255,0.02);
   }
-  .clock .label { font-family: "Orbitron", monospace; font-size: 0.7rem; letter-spacing: 0.25em; color: var(--muted); }
+  .clock .label { font-family: "Orbitron", monospace; font-size: 0.62rem; letter-spacing: 0.25em; color: var(--muted); }
   .clock .value {
     font-family: "Orbitron", monospace; font-weight: 700;
     color: var(--cyan); text-shadow: 0 0 4px rgba(0,245,255,0.4);
-    font-size: 1.1rem; font-variant-numeric: tabular-nums;
+    font-size: 0.95rem; font-variant-numeric: tabular-nums;
   }
-  .round-readout { display: flex; align-items: baseline; gap: 0.5rem; font-family: "Orbitron", monospace; }
-  .round-readout .lbl { font-size: 0.72rem; letter-spacing: 0.3em; color: var(--muted); text-transform: uppercase; }
-  .round-readout .num { font-weight: 900; font-size: 1.6rem; color: var(--cyan); text-shadow: 0 0 5px rgba(0,245,255,0.4); }
-  .round-readout .total { color: var(--muted); font-size: 1.1rem; }
 
-  /* ========== TOPIC ========== */
+  .round-readout { display: flex; align-items: baseline; gap: 0.4rem; font-family: "Orbitron", monospace; }
+  .round-readout .lbl { font-size: 0.62rem; letter-spacing: 0.3em; color: var(--muted); text-transform: uppercase; }
+  .round-readout .num { font-weight: 900; font-size: 1.35rem; color: var(--cyan); text-shadow: 0 0 5px rgba(0,245,255,0.4); }
+  .round-readout .total { color: var(--muted); font-size: 0.95rem; }
+
+  /* ============================== TOPIC ============================== */
   .topic {
     display: grid;
-    grid-template-columns: 260px 1fr 220px;
-    border-radius: 18px;
+    grid-template-columns: 220px 1fr 200px;
+    border-radius: 14px;
     overflow: hidden;
     border: 1px solid var(--border);
-    min-height: 110px;
+    min-height: 0;
   }
   .topic-left {
     background: linear-gradient(135deg, var(--magenta) 0%, #b026ff 100%);
-    display: flex; flex-direction: column; justify-content: center;
-    padding: 1.2rem 1.4rem;
+    display: flex; align-items: center;
+    padding: 0.9rem 1.1rem;
     position: relative; overflow: hidden;
   }
   .topic-left::after {
@@ -159,179 +175,192 @@
   .live-tag {
     display: inline-flex; align-items: center; gap: 0.5rem;
     font-family: "Orbitron", monospace; font-weight: 700;
-    font-size: 0.95rem; letter-spacing: 0.25em; color: #fff;
-    text-shadow: 0 0 5px rgba(255,255,255,0.3);
+    font-size: 0.85rem; letter-spacing: 0.25em; color: #fff;
     z-index: 1;
   }
   .live-tag .dot {
-    width: 10px; height: 10px; border-radius: 50%; background: #fff;
+    width: 9px; height: 9px; border-radius: 50%; background: #fff;
     box-shadow: 0 0 5px #fff;
     animation: blink 1.2s infinite;
   }
   @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+
   .topic-center {
     background: var(--panel);
-    padding: 1.2rem 1.6rem;
-    display: flex; flex-direction: column; justify-content: center; gap: 0.4rem;
+    padding: 0.85rem 1.3rem;
+    display: flex; flex-direction: column; justify-content: center; gap: 0.3rem;
   }
   .topic-text {
     width: 100%;
     background: transparent; color: var(--text); border: none; outline: none;
     font-family: "Space Grotesk", sans-serif; font-weight: 600;
-    font-size: clamp(1.1rem, 1.9vw, 1.7rem);
-    line-height: 1.25; resize: none; overflow: hidden;
+    font-size: clamp(1rem, 1.6vw, 1.45rem);
+    line-height: 1.2; resize: none; overflow: hidden;
   }
-  .topic-text:focus { outline: 2px dashed var(--cyan); outline-offset: 6px; border-radius: 4px; }
+  .topic-text:focus { outline: 2px dashed var(--cyan); outline-offset: 4px; border-radius: 4px; }
   .edit-pill {
     align-self: flex-start;
-    display: inline-flex; align-items: center; gap: 0.4rem;
-    padding: 0.25rem 0.65rem;
+    display: inline-flex; align-items: center; gap: 0.3rem;
+    padding: 0.2rem 0.55rem;
     border: 1px dashed var(--border); border-radius: 999px;
-    color: var(--muted); font-size: 0.7rem; letter-spacing: 0.18em;
+    color: var(--muted); font-size: 0.62rem; letter-spacing: 0.2em;
     text-transform: uppercase; user-select: none;
   }
   .topic-right {
     background: linear-gradient(135deg, #0d1228 0%, #1a2350 100%);
-    padding: 1rem; display: flex; flex-direction: column;
-    align-items: flex-end; justify-content: center; gap: 0.4rem;
+    padding: 0.85rem 1.1rem;
+    display: flex; flex-direction: column;
+    align-items: flex-end; justify-content: center;
     border-left: 1px solid var(--border);
+    overflow: hidden;
   }
-  .now-label { font-family: "Orbitron", monospace; font-size: 0.7rem; letter-spacing: 0.3em; color: var(--muted); }
+  .now-label { font-family: "Orbitron", monospace; font-size: 0.62rem; letter-spacing: 0.3em; color: var(--muted); }
   .now-phase {
     font-family: "Orbitron", monospace; font-weight: 900;
-    font-size: clamp(1rem, 1.6vw, 1.5rem);
+    font-size: clamp(0.95rem, 1.5vw, 1.4rem);
     color: var(--cyan); text-shadow: 0 0 7px rgba(0,245,255,0.4);
-    letter-spacing: 0.15em; text-transform: uppercase; text-align: right;
+    letter-spacing: 0.13em; text-transform: uppercase;
+    line-height: 1.1;
   }
 
-  /* ========== ARENA ==========
-     6-column grid so the bottom row can be exact 50/50:
-       cols       1fr  1fr  210  210  1fr  1fr
-       row 1   [ ATLAS    ][ CENTER  ][ PHOENIX  ]
-       row 2   [   AQUA       ][      VIPER       ]
-     Top side cards = 2fr each, center = 420px (210+210),
-     bottom cards = 2fr+210 = 210+2fr -> equal halves.
-  */
+  /* ============================== ARENA ==============================
+     3 grid columns: left card stack | center clock | right card stack.
+     teams-row uses display:contents so the 4 cards become arena items
+     and we place them via :nth-child (CSS-only, no JS changes).
+     ====================================================================== */
   .arena {
     display: grid;
-    grid-template-columns:
-      minmax(0, 1fr) minmax(0, 1fr) 210px 210px minmax(0, 1fr) minmax(0, 1fr);
-    grid-template-rows: auto auto;
-    gap: 1rem;
-    padding: 0 1rem;
+    grid-template-columns: minmax(0, 1fr) minmax(360px, 1.35fr) minmax(0, 1fr);
+    grid-template-rows: 1fr 1fr;
+    gap: 0.7rem;
+    min-height: 0;
   }
   .teams-row { display: contents; }
 
   .center {
-    grid-column: 3 / 5;
-    grid-row: 1;
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 0.8rem 0.9rem;
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    gap: 0.6rem;
+    align-items: center;
     min-width: 0;
+    min-height: 0;
+    overflow: hidden;
   }
-  .team:nth-child(1) { grid-column: 1 / 4; grid-row: 2; } /* AQUA   bottom-left  (50%) */
-  .team:nth-child(2) { grid-column: 1 / 3; grid-row: 1; } /* ATLAS  top-left           */
-  .team:nth-child(3) { grid-column: 4 / 7; grid-row: 2; } /* VIPER  bottom-right (50%) */
-  .team:nth-child(4) { grid-column: 5 / 7; grid-row: 1; } /* PHOENIX top-right         */
 
-  /* ========== TEAM CARD ========== */
+  .team:nth-child(1) { grid-column: 1; grid-row: 1; }   /* AQUA top-left */
+  .team:nth-child(2) { grid-column: 1; grid-row: 2; }   /* ATLAS bottom-left */
+  .team:nth-child(3) { grid-column: 3; grid-row: 1; }   /* VIPER top-right */
+  .team:nth-child(4) { grid-column: 3; grid-row: 2; }   /* PHOENIX bottom-right */
+
+  /* ============================== TEAM CARD ============================== */
   .team {
     --c: var(--cyan);
-    border-radius: 14px;
+    border-radius: 12px;
     border: 2px solid var(--c);
-    background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.5));
-    padding: 0.8rem 0.9rem 0.9rem;
-    display: flex;
-    flex-direction: column;
-    gap: 0.55rem;
+    background: linear-gradient(180deg, rgba(255,255,255,0.025), rgba(0,0,0,0.55));
+    padding: 0.65rem 0.75rem 0.7rem;
+    display: grid;
+    grid-template-rows: auto auto 1fr auto auto;
+    gap: 0.4rem;
     position: relative;
     overflow: hidden;
-    width: 100%;
-    max-width: 100%;
-    box-sizing: border-box;
-    box-shadow: 0 0 14px -8px var(--c) inset, 0 0 6px -2px var(--c);
-  }
-  .team::before {
-    content: "";
-    position: absolute; inset: 0;
-    background: radial-gradient(circle at 50% 0%, var(--c), transparent 60%);
-    opacity: 0.06; pointer-events: none;
-  }
-  .team::after {
-    content: "";
-    position: absolute; inset: 0;
-    background: repeating-linear-gradient(135deg, rgba(255,255,255,0.025) 0 2px, transparent 2px 14px);
-    pointer-events: none;
+    min-width: 0;
+    min-height: 0;
+    box-shadow: 0 0 8px -3px var(--c) inset, 0 0 4px -1px var(--c);
   }
   .team[data-color="cyan"]    { --c: var(--cyan); }
   .team[data-color="magenta"] { --c: var(--magenta); }
   .team[data-color="lime"]    { --c: var(--lime); }
   .team[data-color="amber"]   { --c: var(--amber); }
+  .team::before {
+    content: "";
+    position: absolute; inset: 0;
+    background: repeating-linear-gradient(135deg, rgba(255,255,255,0.025) 0 2px, transparent 2px 14px);
+    pointer-events: none;
+  }
 
+  /* Header row: rank badge + name/tag block (+ crown floats) */
   .team-head {
     display: grid;
     grid-template-columns: auto 1fr auto;
     align-items: center;
-    gap: 0.7rem;
+    gap: 0.55rem;
+    z-index: 1;
   }
   .team-rank {
-    width: 34px; height: 34px;
+    width: 32px; height: 32px;
     display: flex; align-items: center; justify-content: center;
     border: 2px solid var(--c);
-    border-radius: 9px;
+    border-radius: 7px;
     font-family: "Orbitron", monospace;
-    font-weight: 900; font-size: 0.72rem;
+    font-weight: 900; font-size: 0.68rem;
     color: var(--c);
-    background: rgba(0,0,0,0.45);
-    text-shadow: 0 0 3px var(--c);
+    background: rgba(0,0,0,0.5);
     flex-shrink: 0;
   }
-  .team-info { min-width: 0; line-height: 1.1; }
+  .team-info { min-width: 0; line-height: 1; }
   .team-name {
     font-family: "Orbitron", monospace; font-weight: 900;
-    font-size: clamp(0.9rem, 1.3vw, 1.25rem);
+    font-size: clamp(0.85rem, 1.25vw, 1.2rem);
     color: var(--c);
     text-shadow: 0 0 6px var(--c);
-    letter-spacing: 0.08em;
+    letter-spacing: 0.07em;
     line-height: 1;
   }
   .team-tag {
     color: var(--muted);
-    font-size: 0.6rem;
-    letter-spacing: 0.25em;
+    font-size: 0.55rem;
+    letter-spacing: 0.22em;
     text-transform: uppercase;
-    margin-top: 0.35rem;
+    margin-top: 0.3rem;
     line-height: 1;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
   }
   .crown {
-    font-size: 1.35rem;
-    filter: drop-shadow(0 0 5px var(--amber));
-    opacity: 0; transform: translateY(-4px) scale(0.8);
+    font-size: 1.15rem;
+    filter: drop-shadow(0 0 4px var(--amber));
+    opacity: 0; transform: translateY(-3px) scale(0.8);
     transition: opacity 0.3s, transform 0.3s;
-    flex-shrink: 0;
   }
-  .team.leader .crown { opacity: 1; transform: translateY(0) scale(1); animation: crown-bob 2s ease-in-out infinite; }
+  .team.leader .crown {
+    opacity: 1; transform: translateY(0) scale(1);
+    animation: crown-bob 2s ease-in-out infinite;
+  }
   @keyframes crown-bob {
     0%, 100% { transform: translateY(0) rotate(-5deg); }
     50%      { transform: translateY(-3px) rotate(5deg); }
   }
 
+  /* SCORE label sits above the score block (inserted via ::before) */
   .score-block {
-    flex: 1;
     display: flex; align-items: center; justify-content: center;
     position: relative;
-    min-height: 70px;
+    min-height: 0;
+    z-index: 1;
+  }
+  .score-block::before {
+    content: "SCORE";
+    position: absolute;
+    top: -0.1rem; left: 0;
+    font-family: "Orbitron", monospace;
+    font-size: 0.55rem;
+    letter-spacing: 0.3em;
+    color: var(--muted);
   }
   .score-digits {
     font-family: "Orbitron", monospace; font-weight: 900;
-    font-size: clamp(2.2rem, 3.8vw, 3.4rem);
+    font-size: clamp(2rem, 3.4vw, 3rem);
     color: var(--c);
-    text-shadow: 0 0 7px var(--c), 0 0 14px rgba(255,255,255,0.15);
+    text-shadow: 0 0 7px var(--c);
     line-height: 1;
     letter-spacing: 0.12em;
-    padding: 0.2rem 0.85rem;
-    border-radius: 10px;
+    padding: 0.25rem 0.85rem;
+    border-radius: 9px;
     background: rgba(0,0,0,0.55);
     border: 1px solid rgba(255,255,255,0.06);
     font-variant-numeric: tabular-nums;
@@ -344,136 +373,195 @@
     100% { transform: scale(1); }
   }
 
-  .streak {
-    position: absolute;
-    top: -8px; right: 4px;
-    display: inline-flex; align-items: center; gap: 0.2rem;
-    padding: 0.18rem 0.5rem;
-    border-radius: 999px;
-    background: linear-gradient(90deg, #ff6b00, #ff2d6f);
-    color: #fff;
-    font-family: "Orbitron", monospace;
-    font-weight: 800; font-size: 0.7rem;
-    letter-spacing: 0.1em;
-    box-shadow: 0 0 6px rgba(255, 100, 30, 0.5);
-    opacity: 0; transform: scale(0.8);
-    transition: opacity 0.25s, transform 0.25s;
-    pointer-events: none;
-  }
-  .team.has-streak .streak { opacity: 1; transform: scale(1); animation: streak-shake 0.6s ease-in-out infinite; }
-  @keyframes streak-shake {
-    0%, 100% { transform: scale(1) rotate(-2deg); }
-    50%      { transform: scale(1.05) rotate(2deg); }
-  }
-
-  .score-controls {
-    display: flex; gap: 0.5rem;
-    margin-top: auto;
-  }
+  /* +1 / -1 buttons — dark outline / colored fill */
+  .score-controls { display: flex; gap: 0.4rem; z-index: 1; }
   .score-controls button {
     flex: 1;
-    background: rgba(0,0,0,0.45);
+    background: rgba(0,0,0,0.5);
     color: var(--c);
     border: 1px solid var(--c);
-    border-radius: 9px;
-    padding: 0.42rem;
+    border-radius: 8px;
+    padding: 0.4rem;
     font-family: "Orbitron", monospace;
     font-weight: 800; font-size: 0.85rem;
     cursor: pointer;
-    letter-spacing: 0.08em;
+    letter-spacing: 0.06em;
     transition: background 0.15s, transform 0.05s;
   }
   .score-controls button:hover { background: rgba(255,255,255,0.05); }
   .score-controls button.add {
     background: var(--c); color: #03061a;
-    box-shadow: 0 0 7px rgba(0,0,0,0);
+    border-color: var(--c);
   }
   .score-controls button.add:hover { filter: brightness(1.15); }
   .score-controls button:active { transform: scale(0.96); }
 
-  /* +1 floating particle */
-  .particle {
-    position: absolute;
-    pointer-events: none;
-    font-family: "Orbitron", monospace;
-    font-weight: 900;
-    font-size: 1.6rem;
-    color: var(--c);
-    text-shadow: 0 0 5px var(--c), 0 0 10px var(--c);
-    animation: particle-up 1.1s ease-out forwards;
-    z-index: 5;
+  /* WINS / STREAK / RANK footer.
+     The existing .streak element ("🔥 N") becomes the STREAK pill.
+     WINS and RANK are decorative pseudo-element pills (placeholder
+     values, since dynamic data would require a JS change). */
+  .streak {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 0.3rem;
+    margin-top: 0.1rem;
+    z-index: 1;
+    /* reset the old absolute ribbon styles */
+    position: static !important;
+    transform: none !important;
+    opacity: 1 !important;
+    background: none !important;
+    box-shadow: none !important;
+    color: inherit !important;
+    font: inherit !important;
+    padding: 0 !important;
+    border-radius: 0 !important;
+    pointer-events: auto !important;
+    animation: none !important;
+    font-size: 0;
   }
-  @keyframes particle-up {
-    0%   { opacity: 0; transform: translate(-50%, 0) scale(0.6); }
-    20%  { opacity: 1; transform: translate(-50%, -20px) scale(1.2); }
-    100% { opacity: 0; transform: translate(-50%, -100px) scale(1); }
+  .streak::before,
+  .streak::after,
+  .streak {
+    /* reuse text-shadow chain implicitly via children */
+  }
+  .streak::before {
+    content: "WINS\A 0";
+  }
+  .streak::after {
+    content: "RANK\A —";
+  }
+  .streak::before,
+  .streak::after {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: 0.3rem 0.3rem;
+    background: rgba(0,0,0,0.5);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 7px;
+    font-family: "Orbitron", monospace;
+    font-size: 0.55rem;
+    letter-spacing: 0.18em;
+    color: var(--muted);
+    line-height: 1.6;
+    white-space: pre;
+    text-align: center;
+  }
+  /* The actual .streak text (e.g. "🔥 3") is the middle stat box */
+  .streak {
+    /* Apply pseudo-element reset above; the JS-rendered text fills the middle cell. */
+  }
+  .streak {
+    color: var(--muted);
+  }
+  /* Wrap the JS-rendered text in a styled middle cell via ::marker won't work;
+     instead style the streak's own text by tweaking font + adding pseudo box around it.
+     We absolutely place a label band above using a 2nd pseudo (none free) — instead
+     show the streak count in the middle column with raw text styling. */
+  .streak {
+    font-size: 0.7rem;
+    text-align: center;
+  }
+  .streak {
+    /* middle cell label appears via ::first-line trick is hard;
+       The JS already prints "🔥 N" so we just style it inline. */
   }
 
-  /* ========== CENTER STAGE (TIMER) ========== */
-  .center {
-    background: var(--panel);
-    border: 1px solid var(--border);
-    border-radius: 18px;
-    padding: 1rem 1.1rem;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.8rem;
-    min-height: 520px;
-    min-width: 0;
+  /* Crown highlight for leader (works alongside footer) */
+
+  /* ============================== CENTER / TIMER ============================== */
+  .mode-tabs {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 0.35rem;
+    width: 100%;
   }
-  .mode-tabs { display: grid; grid-template-columns: repeat(5, 1fr); gap: 0.4rem; width: 100%; }
   .mode-tab {
     background: rgba(0,0,0,0.4);
     border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 0.5rem 0.3rem;
+    border-radius: 8px;
+    padding: 0.4rem 0.25rem;
     text-align: center;
     cursor: pointer;
     transition: border-color 0.15s, background 0.15s;
   }
-  .mode-tab .time { font-family: "Orbitron", monospace; font-weight: 800; font-size: 0.95rem; }
-  .mode-tab .name { font-family: "Orbitron", monospace; font-size: 0.6rem; letter-spacing: 0.18em; color: var(--muted); text-transform: uppercase; margin-top: 0.2rem; }
+  .mode-tab .time {
+    font-family: "Orbitron", monospace; font-weight: 800;
+    font-size: 0.85rem;
+    color: var(--text);
+  }
+  .mode-tab .name {
+    font-family: "Orbitron", monospace;
+    font-size: 0.55rem;
+    letter-spacing: 0.18em;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-top: 0.18rem;
+  }
   .mode-tab.active {
     border-color: var(--cyan);
     background: rgba(0, 245, 255, 0.1);
-    box-shadow: 0 0 8px rgba(0, 245, 255, 0.2);
+    box-shadow: 0 0 8px rgba(0, 245, 255, 0.25);
   }
-  .mode-tab.active .time { color: var(--cyan); text-shadow: 0 0 4px rgba(0,245,255,0.4); }
+  .mode-tab.active .time { color: var(--cyan); text-shadow: 0 0 4px rgba(0,245,255,0.5); }
   .mode-tab.active .name { color: var(--cyan); }
 
   .timer-stage {
     display: flex; align-items: center; justify-content: center;
-    position: relative;
-    min-height: 320px;
-    padding: 20px 0;
+    min-height: 0;
     width: 100%;
+    height: 100%;
+    overflow: hidden;
   }
-  .ring-wrap { position: relative; width: 260px; height: 260px; }
-  .ring-wrap svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+  .ring-wrap {
+    position: relative;
+    aspect-ratio: 1;
+    height: 100%;
+    max-height: min(100%, 360px);
+    max-width: 100%;
+  }
+  .ring-wrap svg { width: 100%; height: 100%; transform: rotate(-90deg); display: block; }
   .ring-bg { stroke: rgba(255,255,255,0.06); }
   .ring-fg {
     stroke: var(--cyan);
     transition: stroke-dashoffset 0.95s linear, stroke 0.3s;
     filter: drop-shadow(0 0 4px rgba(0,245,255,0.4));
   }
-  .ring-fg.warn { stroke: var(--amber); filter: drop-shadow(0 0 5px rgba(255,170,0,0.4)); }
-  .ring-fg.danger { stroke: var(--red); filter: drop-shadow(0 0 7px rgba(239,68,68,0.5)); }
+  .ring-fg.warn   { stroke: var(--amber); filter: drop-shadow(0 0 5px rgba(255,170,0,0.4)); }
+  .ring-fg.danger { stroke: var(--red);   filter: drop-shadow(0 0 7px rgba(239,68,68,0.5)); }
   .ring-tick { stroke: rgba(255,255,255,0.08); stroke-width: 1; }
 
   .timer-display {
     position: absolute; inset: 0;
-    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.3rem;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 0.5rem;
+  }
+  /* READY pill above the digits — pseudo-element so no HTML change */
+  .timer-display::before {
+    content: "◆ READY ◆";
+    font-family: "Orbitron", monospace;
+    font-weight: 700;
+    font-size: 0.7rem;
+    letter-spacing: 0.25em;
+    color: var(--cyan);
+    padding: 0.3rem 0.85rem;
+    border: 1px solid var(--cyan);
+    border-radius: 999px;
+    background: rgba(0, 245, 255, 0.06);
+    text-shadow: 0 0 5px rgba(0,245,255,0.5);
+    box-shadow: 0 0 8px rgba(0, 245, 255, 0.18);
   }
   .timer-display .digits {
     font-family: "Orbitron", monospace; font-weight: 900;
-    font-size: clamp(3rem, 6.5vw, 5rem);
+    font-size: clamp(2.5rem, 5.5vw, 4.6rem);
     color: var(--cyan);
-    text-shadow: 0 0 10px rgba(0,245,255,0.5), 0 0 20px rgba(0,245,255,0.25);
+    text-shadow: 0 0 10px rgba(0,245,255,0.55), 0 0 20px rgba(0,245,255,0.25);
     line-height: 1; letter-spacing: 0.04em;
     font-variant-numeric: tabular-nums;
   }
-  .timer-display .digits.warn { color: var(--amber); text-shadow: 0 0 10px rgba(255,170,0,0.5), 0 0 20px rgba(255,170,0,0.25); }
+  .timer-display .digits.warn {
+    color: var(--amber);
+    text-shadow: 0 0 10px rgba(255,170,0,0.55), 0 0 20px rgba(255,170,0,0.25);
+  }
   .timer-display .digits.danger {
     color: var(--red);
     text-shadow: 0 0 10px rgba(239,68,68,0.55), 0 0 20px rgba(239,68,68,0.3);
@@ -483,141 +571,143 @@
     0%, 100% { opacity: 1; transform: scale(1); }
     50%      { opacity: 0.55; transform: scale(1.05); }
   }
-  .timer-display .sub {
-    font-family: "Orbitron", monospace;
-    font-size: 0.72rem; letter-spacing: 0.3em;
-    color: var(--muted); text-transform: uppercase;
-  }
-  .center.danger { animation: stage-flash 0.7s infinite; }
-  @keyframes stage-flash {
-    0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
-    50%      { box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.4); }
-  }
 
-  .timer-controls { display: flex; gap: 0.5rem; justify-content: center; width: 100%; }
+  .timer-controls { display: flex; gap: 0.4rem; justify-content: center; width: 100%; }
   .timer-controls button {
-    flex: 1; max-width: 130px;
-    background: rgba(0,0,0,0.45);
+    flex: 1; max-width: 110px;
+    background: rgba(0,0,0,0.5);
     color: var(--text);
     border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 0.65rem;
+    border-radius: 8px;
+    padding: 0.5rem;
     font-family: "Orbitron", monospace;
     font-weight: 700; letter-spacing: 0.18em;
-    text-transform: uppercase; font-size: 0.78rem;
+    text-transform: uppercase; font-size: 0.72rem;
     cursor: pointer;
   }
   .timer-controls button:hover { background: rgba(255,255,255,0.06); }
   .timer-controls button.go {
     background: var(--cyan); color: #03161a;
     border-color: var(--cyan);
-    box-shadow: 0 0 8px rgba(0,245,255,0.3);
+    box-shadow: 0 0 6px rgba(0,245,255,0.3);
   }
   .timer-controls button:disabled { opacity: 0.4; cursor: not-allowed; }
 
-  /* ========== PHASE NAV (FIGHTING-GAME DIAGONAL TABS) ==========
-     Pulled out of .center's flow with position:absolute so it sits
-     as a full-width row anchored to the bottom of <body>, below all
-     four team cards. body has padding-bottom that reserves room for
-     it so the arena content can never overlap.
-  */
+  /* ============================== PHASE NAV (DECK) ==============================
+     Lives inside .center in the DOM; promoted out via grid/positioning so it sits
+     as a full-width row at the very bottom of the page.
+     ============================================================================== */
   .deck {
-    position: absolute;
-    left: 1.4vw;
-    right: 1.4vw;
-    bottom: 1.2vh;
+    position: fixed;
+    left: 1vw;
+    right: 1vw;
+    bottom: 0.8vh;
     display: grid;
     grid-template-columns: 1fr auto;
     align-items: center;
-    gap: 1rem;
-    padding: 0.6rem 0.9rem;
+    gap: 0.8rem;
+    padding: 0.5rem 0.8rem;
     background: var(--panel);
     border: 1px solid var(--border);
-    border-radius: 14px;
-    margin-top: 0;
+    border-radius: 12px;
     z-index: 10;
   }
-  .fg-tabs {
-    display: flex;
-    gap: 0;
-    flex: 1;
-    justify-content: flex-start;
-    flex-wrap: nowrap;
-  }
+  body { padding-bottom: calc(0.8vh + 56px); }
+
+  .fg-tabs { display: flex; gap: 0; flex-wrap: nowrap; min-width: 0; }
   .fg-tab {
-    --tc: var(--cyan);
     position: relative;
-    margin-left: -14px;
-    padding: 0.55rem 1.1rem 0.55rem 1.4rem;
+    margin-left: -12px;
+    padding: 0.5rem 1.1rem 0.5rem 1.4rem;
     background: rgba(0,0,0,0.5);
     border: 1px solid var(--border);
     color: var(--muted);
     font-family: "Orbitron", monospace;
     font-weight: 800;
-    font-size: 0.6rem;
-    letter-spacing: 0.18em;
+    font-size: 0.7rem;
+    letter-spacing: 0.16em;
     text-transform: uppercase;
     cursor: pointer;
-    clip-path: polygon(14px 0, 100% 0, calc(100% - 14px) 100%, 0 100%);
+    clip-path: polygon(12px 0, 100% 0, calc(100% - 12px) 100%, 0 100%);
     transition: color 0.2s, background 0.2s, transform 0.15s;
     text-align: center;
-    min-width: 110px;
   }
   .fg-tab:first-child { margin-left: 0; }
-  .fg-tab:hover { color: var(--text); background: rgba(255,255,255,0.04); transform: translateY(-1px); }
+  .fg-tab:hover { color: var(--text); background: rgba(255,255,255,0.04); }
   .fg-tab.done {
     color: var(--text);
-    background: rgba(0, 245, 255, 0.08);
+    background: rgba(0, 245, 255, 0.07);
     border-color: rgba(0, 245, 255, 0.3);
   }
   .fg-tab.active {
     color: #03161a;
     background: linear-gradient(180deg, var(--cyan), #00b8c4);
     border-color: var(--cyan);
-    box-shadow: 0 0 9px rgba(0, 245, 255, 0.35);
+    box-shadow: 0 0 7px rgba(0, 245, 255, 0.35);
     z-index: 2;
-    transform: translateY(-2px) scale(1.04);
+    transform: translateY(-1px) scale(1.04);
     animation: tab-glow 1.6s ease-in-out infinite;
   }
   @keyframes tab-glow {
-    0%, 100% { box-shadow: 0 0 7px rgba(0, 245, 255, 0.3); }
-    50%      { box-shadow: 0 0 12px rgba(0, 245, 255, 0.5); }
+    0%, 100% { box-shadow: 0 0 6px rgba(0, 245, 255, 0.3); }
+    50%      { box-shadow: 0 0 11px rgba(0, 245, 255, 0.55); }
   }
 
-  .deck-controls { display: flex; gap: 0.5rem; }
+  .deck-controls { display: flex; gap: 0.4rem; }
   .deck-controls button {
-    background: rgba(0,0,0,0.45);
+    background: rgba(0,0,0,0.5);
     color: var(--text);
     border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 0.55rem 1rem;
+    border-radius: 8px;
+    padding: 0.45rem 0.85rem;
     font-family: "Orbitron", monospace;
     font-weight: 700;
-    font-size: 0.78rem;
-    letter-spacing: 0.18em;
+    font-size: 0.7rem;
+    letter-spacing: 0.16em;
     text-transform: uppercase;
     cursor: pointer;
-    clip-path: polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%);
+    clip-path: polygon(7px 0, 100% 0, calc(100% - 7px) 100%, 0 100%);
   }
   .deck-controls button:hover { background: rgba(255,255,255,0.07); }
   .deck-controls button.primary {
     background: linear-gradient(135deg, var(--magenta), var(--purple));
     color: #fff; border-color: var(--magenta);
-    box-shadow: 0 0 8px rgba(255, 0, 170, 0.3);
+    box-shadow: 0 0 7px rgba(255, 0, 170, 0.3);
   }
   .deck-controls button.danger { color: var(--red); border-color: rgba(239,68,68,0.5); }
 
+  /* ============================== +1 PARTICLE ============================== */
+  .particle {
+    position: absolute;
+    pointer-events: none;
+    font-family: "Orbitron", monospace;
+    font-weight: 900;
+    font-size: 1.4rem;
+    color: var(--c);
+    text-shadow: 0 0 5px var(--c), 0 0 10px var(--c);
+    animation: particle-up 1.1s ease-out forwards;
+    z-index: 5;
+  }
+  @keyframes particle-up {
+    0%   { opacity: 0; transform: translate(-50%, 0) scale(0.6); }
+    20%  { opacity: 1; transform: translate(-50%, -16px) scale(1.2); }
+    100% { opacity: 0; transform: translate(-50%, -90px) scale(1); }
+  }
+
+  /* ============================== MOBILE ============================== */
   @media (max-width: 900px) {
+    html, body { overflow: auto; height: auto; }
+    body { padding-bottom: calc(0.8vh + 110px); }
     .arena {
       grid-template-columns: 1fr 1fr;
       grid-template-rows: auto auto auto;
-      padding: 0;
     }
     .center           { grid-column: 1 / -1; grid-row: 1; }
-    .team:nth-child(1) { grid-column: 1;     grid-row: 3; } /* AQUA    */
-    .team:nth-child(2) { grid-column: 1;     grid-row: 2; } /* ATLAS   */
-    .team:nth-child(3) { grid-column: 2;     grid-row: 3; } /* VIPER   */
-    .team:nth-child(4) { grid-column: 2;     grid-row: 2; } /* PHOENIX */
+    .team:nth-child(1) { grid-column: 1; grid-row: 2; }
+    .team:nth-child(2) { grid-column: 1; grid-row: 3; }
+    .team:nth-child(3) { grid-column: 2; grid-row: 2; }
+    .team:nth-child(4) { grid-column: 2; grid-row: 3; }
+    .deck { flex-wrap: wrap; }
   }
 </style>
 </head>
