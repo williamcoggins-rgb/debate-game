@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Classroom Debate Game</title>
+<style>
+  :root {
+    --bg: #0b1020;
+    --panel: #141a30;
+    --panel-2: #1c2440;
+    --text: #f5f7ff;
+    --muted: #97a0c2;
+    --accent: #6ee7ff;
+    --pro: #4ade80;
+    --con: #f87171;
+    --warn: #fbbf24;
+    --border: #2a3354;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    height: 100%;
+  }
+  body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    padding: 2vh 3vw;
+    gap: 2vh;
+  }
+  header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 2rem;
+  }
+  .round {
+    font-size: clamp(2rem, 5vw, 4rem);
+    font-weight: 800;
+    letter-spacing: 0.02em;
+  }
+  .round span.num { color: var(--accent); }
+  .phase-badge {
+    background: var(--panel-2);
+    border: 2px solid var(--accent);
+    color: var(--accent);
+    padding: 0.6rem 1.4rem;
+    border-radius: 999px;
+    font-size: clamp(1.2rem, 2.4vw, 2rem);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+  .scenario {
+    background: var(--panel);
+    border: 2px solid var(--border);
+    border-radius: 16px;
+    padding: 2rem;
+    flex: 0 0 auto;
+  }
+  .scenario-label {
+    font-size: 1.1rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    margin-bottom: 1rem;
+  }
+  .scenario-text {
+    width: 100%;
+    background: transparent;
+    color: var(--text);
+    border: none;
+    outline: none;
+    font-size: clamp(1.6rem, 3.2vw, 2.8rem);
+    font-weight: 600;
+    line-height: 1.3;
+    resize: none;
+    font-family: inherit;
+    overflow: hidden;
+  }
+  .scenario-text:focus {
+    outline: 2px dashed var(--accent);
+    outline-offset: 6px;
+    border-radius: 6px;
+  }
+  .timer-row {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 2rem;
+    align-items: stretch;
+  }
+  .side {
+    background: var(--panel);
+    border: 3px solid var(--border);
+    border-radius: 16px;
+    padding: 1.5rem;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 0.8rem;
+  }
+  .side.pro { border-color: var(--pro); }
+  .side.con { border-color: var(--con); }
+  .side-label {
+    font-size: clamp(1.4rem, 3vw, 2.4rem);
+    font-weight: 800;
+    letter-spacing: 0.08em;
+  }
+  .side.pro .side-label { color: var(--pro); }
+  .side.con .side-label { color: var(--con); }
+  .score {
+    font-size: clamp(3rem, 7vw, 6rem);
+    font-weight: 900;
+    line-height: 1;
+  }
+  .score-controls {
+    display: flex;
+    gap: 0.8rem;
+    justify-content: center;
+  }
+  .timer {
+    background: var(--panel);
+    border: 3px solid var(--accent);
+    border-radius: 16px;
+    padding: 1.5rem 2.5rem;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 0.6rem;
+    min-width: 320px;
+  }
+  .timer-label {
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    font-size: 1rem;
+  }
+  .timer-value {
+    font-size: clamp(4rem, 10vw, 8rem);
+    font-weight: 900;
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+  }
+  .timer-value.low { color: var(--warn); }
+  .timer-value.zero { color: var(--con); }
+  .timer-controls {
+    display: flex;
+    gap: 0.6rem;
+    justify-content: center;
+  }
+  footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+  .phase-progress {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+  .phase-pill {
+    padding: 0.4rem 0.9rem;
+    border-radius: 999px;
+    background: var(--panel-2);
+    color: var(--muted);
+    font-size: 0.95rem;
+    font-weight: 600;
+    border: 1px solid var(--border);
+  }
+  .phase-pill.active {
+    background: var(--accent);
+    color: #051018;
+    border-color: var(--accent);
+  }
+  button {
+    background: var(--panel-2);
+    color: var(--text);
+    border: 2px solid var(--border);
+    border-radius: 10px;
+    padding: 0.7rem 1.2rem;
+    font-size: 1.1rem;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+    transition: transform 0.05s, background 0.15s, border-color 0.15s;
+  }
+  button:hover { background: #232c4f; border-color: var(--accent); }
+  button:active { transform: scale(0.97); }
+  button.primary { background: var(--accent); color: #051018; border-color: var(--accent); }
+  button.primary:hover { background: #5dd9f3; }
+  button.danger { border-color: var(--con); color: var(--con); }
+  button.danger:hover { background: #2a1818; }
+  .controls {
+    display: flex;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+  }
+</style>
+</head>
+<body>
+  <header>
+    <div class="round">Round <span class="num" id="round">1</span> <span style="color: var(--muted);">/ <span id="totalRounds">3</span></span></div>
+    <div class="phase-badge" id="phaseLabel">Preparation</div>
+  </header>
+
+  <div class="scenario">
+    <div class="scenario-label">Scenario / Topic (click to edit)</div>
+    <textarea class="scenario-text" id="scenario" rows="2" spellcheck="false"></textarea>
+  </div>
+
+  <div class="timer-row">
+    <div class="side pro">
+      <div class="side-label">PRO</div>
+      <div class="score" id="proScore">0</div>
+      <div class="score-controls">
+        <button data-side="pro" data-delta="-1">−1</button>
+        <button data-side="pro" data-delta="1" class="primary">+1</button>
+      </div>
+    </div>
+
+    <div class="timer">
+      <div class="timer-label">Time Remaining</div>
+      <div class="timer-value" id="timerValue">3:00</div>
+      <div class="timer-controls">
+        <button id="btnStart" class="primary">Start</button>
+        <button id="btnPause">Pause</button>
+        <button id="btnReset">Reset</button>
+      </div>
+    </div>
+
+    <div class="side con">
+      <div class="side-label">CON</div>
+      <div class="score" id="conScore">0</div>
+      <div class="score-controls">
+        <button data-side="con" data-delta="-1">−1</button>
+        <button data-side="con" data-delta="1" class="primary">+1</button>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <div class="phase-progress" id="phaseProgress"></div>
+    <div class="controls">
+      <button id="btnPrev">◀ Prev Phase</button>
+      <button id="btnNext" class="primary">Next Phase ▶</button>
+      <button id="btnReload" class="danger">Reset Game</button>
+    </div>
+  </footer>
+
+<script>
+  let lastState = null;
+  let pollHandle = null;
+
+  async function api(path, opts = {}) {
+    const res = await fetch(path, {
+      method: opts.method || 'GET',
+      headers: { 'Content-Type': 'application/json' },
+      body: opts.body ? JSON.stringify(opts.body) : undefined,
+    });
+    return res.json();
+  }
+
+  function fmtTime(s) {
+    s = Math.max(0, s | 0);
+    const m = Math.floor(s / 60);
+    const sec = s % 60;
+    return `${m}:${sec.toString().padStart(2, '0')}`;
+  }
+
+  function render(s) {
+    lastState = s;
+    document.getElementById('round').textContent = s.round;
+    document.getElementById('totalRounds').textContent = s.totalRounds;
+    document.getElementById('phaseLabel').textContent = s.phase.label;
+    document.getElementById('proScore').textContent = s.scores.pro;
+    document.getElementById('conScore').textContent = s.scores.con;
+
+    const ta = document.getElementById('scenario');
+    if (document.activeElement !== ta) {
+      ta.value = s.scenario;
+      autoSize(ta);
+    }
+
+    const tv = document.getElementById('timerValue');
+    tv.textContent = fmtTime(s.timer.remaining);
+    tv.classList.toggle('low', s.timer.remaining <= 10 && s.timer.remaining > 0);
+    tv.classList.toggle('zero', s.timer.remaining === 0);
+
+    const pp = document.getElementById('phaseProgress');
+    pp.innerHTML = '';
+    s.phases.forEach((p, i) => {
+      const pill = document.createElement('div');
+      pill.className = 'phase-pill' + (i === s.phaseIndex ? ' active' : '');
+      pill.textContent = p.label;
+      pp.appendChild(pill);
+    });
+
+    document.getElementById('btnStart').disabled = s.timer.running;
+    document.getElementById('btnPause').disabled = !s.timer.running;
+  }
+
+  function autoSize(ta) {
+    ta.style.height = 'auto';
+    ta.style.height = ta.scrollHeight + 'px';
+  }
+
+  async function refresh() {
+    try {
+      const s = await api('/api/state');
+      render(s);
+    } catch (e) { console.error(e); }
+  }
+
+  function startLocalTick() {
+    if (pollHandle) clearInterval(pollHandle);
+    pollHandle = setInterval(() => {
+      if (!lastState) return;
+      if (lastState.timer.running && lastState.timer.remaining > 0) {
+        lastState.timer.remaining -= 1;
+        render(lastState);
+        if (lastState.timer.remaining === 0) refresh();
+      }
+    }, 1000);
+  }
+
+  document.getElementById('btnNext').addEventListener('click', async () => {
+    render(await api('/api/phase/next', { method: 'POST' }));
+  });
+  document.getElementById('btnPrev').addEventListener('click', async () => {
+    render(await api('/api/phase/prev', { method: 'POST' }));
+  });
+  document.getElementById('btnStart').addEventListener('click', async () => {
+    render(await api('/api/timer/start', { method: 'POST' }));
+  });
+  document.getElementById('btnPause').addEventListener('click', async () => {
+    render(await api('/api/timer/pause', { method: 'POST' }));
+  });
+  document.getElementById('btnReset').addEventListener('click', async () => {
+    render(await api('/api/timer/reset', { method: 'POST' }));
+  });
+  document.getElementById('btnReload').addEventListener('click', async () => {
+    if (confirm('Reset entire game?')) {
+      render(await api('/api/reset', { method: 'POST' }));
+    }
+  });
+
+  document.querySelectorAll('[data-side]').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const side = btn.dataset.side;
+      const delta = parseInt(btn.dataset.delta, 10);
+      render(await api('/api/score', { method: 'POST', body: { side, delta } }));
+    });
+  });
+
+  const scenarioEl = document.getElementById('scenario');
+  let scenarioTimer = null;
+  scenarioEl.addEventListener('input', () => {
+    autoSize(scenarioEl);
+    clearTimeout(scenarioTimer);
+    scenarioTimer = setTimeout(async () => {
+      await api('/api/scenario', { method: 'POST', body: { scenario: scenarioEl.value } });
+    }, 400);
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (document.activeElement === scenarioEl) return;
+    if (e.key === ' ') {
+      e.preventDefault();
+      const btn = lastState && lastState.timer.running ? 'btnPause' : 'btnStart';
+      document.getElementById(btn).click();
+    } else if (e.key === 'ArrowRight') {
+      document.getElementById('btnNext').click();
+    } else if (e.key === 'ArrowLeft') {
+      document.getElementById('btnPrev').click();
+    }
+  });
+
+  refresh();
+  setInterval(refresh, 5000);
+  startLocalTick();
+</script>
+</body>
+</html>
