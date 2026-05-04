@@ -3,262 +3,692 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Classroom Debate Game</title>
+<title>DEBATE ARENA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #0b1020;
-    --panel: #141a30;
-    --panel-2: #1c2440;
+    --bg: #05060f;
+    --bg-2: #0a0d1f;
+    --panel: #0f1226;
+    --panel-2: #161a36;
+    --border: #232850;
     --text: #f5f7ff;
-    --muted: #97a0c2;
-    --accent: #6ee7ff;
-    --pro: #4ade80;
-    --con: #f87171;
-    --warn: #fbbf24;
-    --border: #2a3354;
+    --muted: #7d85b3;
+    --cyan: #00f5ff;
+    --magenta: #ff00aa;
+    --lime: #aaff00;
+    --amber: #ffaa00;
+    --green: #4ade80;
+    --red: #ef4444;
+    --purple: #8b5cf6;
   }
   * { box-sizing: border-box; }
   html, body {
-    margin: 0;
-    padding: 0;
+    margin: 0; padding: 0;
     background: var(--bg);
     color: var(--text);
-    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    font-family: "Space Grotesk", system-ui, sans-serif;
     height: 100%;
+    overflow-x: hidden;
   }
   body {
-    display: flex;
-    flex-direction: column;
+    background:
+      radial-gradient(1200px 600px at 15% -10%, rgba(255, 0, 170, 0.10), transparent 60%),
+      radial-gradient(1000px 600px at 85% 110%, rgba(255, 170, 0, 0.10), transparent 60%),
+      radial-gradient(900px 700px at 50% 50%, rgba(0, 245, 255, 0.05), transparent 70%),
+      var(--bg);
     min-height: 100vh;
-    padding: 2vh 3vw;
-    gap: 2vh;
-  }
-  header {
+    padding: 1.4vh 1.6vw;
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 2rem;
+    flex-direction: column;
+    gap: 1.2vh;
   }
-  .round {
-    font-size: clamp(2rem, 5vw, 4rem);
-    font-weight: 800;
-    letter-spacing: 0.02em;
-  }
-  .round span.num { color: var(--accent); }
-  .phase-badge {
-    background: var(--panel-2);
-    border: 2px solid var(--accent);
-    color: var(--accent);
-    padding: 0.6rem 1.4rem;
-    border-radius: 999px;
-    font-size: clamp(1.2rem, 2.4vw, 2rem);
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-  }
-  .scenario {
-    background: var(--panel);
-    border: 2px solid var(--border);
-    border-radius: 16px;
-    padding: 2rem;
-    flex: 0 0 auto;
-  }
-  .scenario-label {
-    font-size: 1.1rem;
-    color: var(--muted);
-    text-transform: uppercase;
-    letter-spacing: 0.15em;
-    margin-bottom: 1rem;
-  }
-  .scenario-text {
-    width: 100%;
-    background: transparent;
-    color: var(--text);
-    border: none;
-    outline: none;
-    font-size: clamp(1.6rem, 3.2vw, 2.8rem);
-    font-weight: 600;
-    line-height: 1.3;
-    resize: none;
-    font-family: inherit;
-    overflow: hidden;
-  }
-  .scenario-text:focus {
-    outline: 2px dashed var(--accent);
-    outline-offset: 6px;
-    border-radius: 6px;
-  }
-  .timer-row {
+
+  /* ========== HUD ========== */
+  .hud {
     display: grid;
-    grid-template-columns: 1fr auto 1fr;
-    gap: 2rem;
-    align-items: stretch;
+    grid-template-columns: auto auto 1fr auto auto;
+    align-items: center;
+    gap: 1.2rem;
+    background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0));
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 0.7rem 1.2rem;
   }
-  .side {
-    background: var(--panel);
-    border: 3px solid var(--border);
-    border-radius: 16px;
-    padding: 1.5rem;
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    gap: 0.8rem;
-  }
-  .side.pro { border-color: var(--pro); }
-  .side.con { border-color: var(--con); }
-  .side-label {
-    font-size: clamp(1.4rem, 3vw, 2.4rem);
-    font-weight: 800;
-    letter-spacing: 0.08em;
-  }
-  .side.pro .side-label { color: var(--pro); }
-  .side.con .side-label { color: var(--con); }
-  .score {
-    font-size: clamp(3rem, 7vw, 6rem);
+  .logo { display: flex; align-items: center; gap: 0.8rem; }
+  .logo-mark { width: 46px; height: 46px; filter: drop-shadow(0 0 10px rgba(0, 245, 255, 0.6)); }
+  .logo-text { display: flex; flex-direction: column; line-height: 1; }
+  .logo-text .title {
+    font-family: "Orbitron", monospace;
     font-weight: 900;
-    line-height: 1;
+    font-size: 1.45rem;
+    letter-spacing: 0.18em;
   }
-  .score-controls {
-    display: flex;
-    gap: 0.8rem;
-    justify-content: center;
-  }
-  .timer {
-    background: var(--panel);
-    border: 3px solid var(--accent);
-    border-radius: 16px;
-    padding: 1.5rem 2.5rem;
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    gap: 0.6rem;
-    min-width: 320px;
-  }
-  .timer-label {
+  .logo-text .sub {
+    font-size: 0.72rem;
     color: var(--muted);
+    letter-spacing: 0.3em;
+    margin-top: 0.3rem;
     text-transform: uppercase;
-    letter-spacing: 0.15em;
-    font-size: 1rem;
   }
-  .timer-value {
-    font-size: clamp(4rem, 10vw, 8rem);
-    font-weight: 900;
-    font-variant-numeric: tabular-nums;
+  .badge-match {
+    display: inline-flex; align-items: center; gap: 0.6rem;
+    padding: 0.55rem 1.1rem;
+    border-radius: 999px;
+    background: rgba(74, 222, 128, 0.08);
+    border: 1px solid rgba(74, 222, 128, 0.45);
+    color: var(--green);
+    font-family: "Orbitron", monospace;
+    font-weight: 700;
+    font-size: 0.78rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+  }
+  .pulse-dot {
+    width: 9px; height: 9px; border-radius: 50%;
+    background: var(--green);
+    animation: pulse 1.4s infinite;
+  }
+  @keyframes pulse {
+    0%   { box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.7); }
+    70%  { box-shadow: 0 0 0 12px rgba(74, 222, 128, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(74, 222, 128, 0); }
+  }
+  .hype { display: flex; align-items: center; gap: 0.7rem; justify-self: end; min-width: 260px; }
+  .hype .label {
+    font-family: "Orbitron", monospace;
+    font-size: 0.72rem; letter-spacing: 0.25em; color: var(--muted);
+  }
+  .hype-bar {
+    flex: 1; height: 10px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 999px; overflow: hidden;
+    border: 1px solid var(--border);
+    min-width: 130px;
+  }
+  .hype-bar > div {
+    height: 100%;
+    background: linear-gradient(90deg, var(--magenta), var(--purple), var(--cyan));
+    box-shadow: 0 0 12px rgba(255,0,170,0.5);
+    transition: width 0.5s ease;
+  }
+  .hype .pct { font-family: "Orbitron", monospace; font-weight: 700; font-size: 1rem; min-width: 3.5ch; text-align: right; }
+  .clock {
+    display: flex; align-items: center; gap: 0.6rem;
+    padding: 0.4rem 0.9rem;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: rgba(255,255,255,0.02);
+  }
+  .clock .label { font-family: "Orbitron", monospace; font-size: 0.7rem; letter-spacing: 0.25em; color: var(--muted); }
+  .clock .value {
+    font-family: "Orbitron", monospace; font-weight: 700;
+    color: var(--cyan); text-shadow: 0 0 8px rgba(0,245,255,0.6);
+    font-size: 1.1rem; font-variant-numeric: tabular-nums;
+  }
+  .round-readout { display: flex; align-items: baseline; gap: 0.5rem; font-family: "Orbitron", monospace; }
+  .round-readout .lbl { font-size: 0.72rem; letter-spacing: 0.3em; color: var(--muted); text-transform: uppercase; }
+  .round-readout .num { font-weight: 900; font-size: 1.6rem; color: var(--cyan); text-shadow: 0 0 10px rgba(0,245,255,0.6); }
+  .round-readout .total { color: var(--muted); font-size: 1.1rem; }
+
+  /* ========== TOPIC ========== */
+  .topic {
+    display: grid;
+    grid-template-columns: 260px 1fr 220px;
+    border-radius: 18px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    min-height: 110px;
+  }
+  .topic-left {
+    background: linear-gradient(135deg, var(--magenta) 0%, #b026ff 100%);
+    display: flex; flex-direction: column; justify-content: center;
+    padding: 1.2rem 1.4rem;
+    position: relative; overflow: hidden;
+  }
+  .topic-left::after {
+    content: "";
+    position: absolute; inset: 0;
+    background: repeating-linear-gradient(45deg, rgba(255,255,255,0.06) 0 2px, transparent 2px 16px);
+    pointer-events: none;
+  }
+  .live-tag {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    font-family: "Orbitron", monospace; font-weight: 700;
+    font-size: 0.95rem; letter-spacing: 0.25em; color: #fff;
+    text-shadow: 0 0 10px rgba(255,255,255,0.4);
+    z-index: 1;
+  }
+  .live-tag .dot {
+    width: 10px; height: 10px; border-radius: 50%; background: #fff;
+    box-shadow: 0 0 10px #fff;
+    animation: blink 1.2s infinite;
+  }
+  @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+  .topic-center {
+    background: var(--panel);
+    padding: 1.2rem 1.6rem;
+    display: flex; flex-direction: column; justify-content: center; gap: 0.4rem;
+  }
+  .topic-text {
+    width: 100%;
+    background: transparent; color: var(--text); border: none; outline: none;
+    font-family: "Space Grotesk", sans-serif; font-weight: 600;
+    font-size: clamp(1.1rem, 1.9vw, 1.7rem);
+    line-height: 1.25; resize: none; overflow: hidden;
+  }
+  .topic-text:focus { outline: 2px dashed var(--cyan); outline-offset: 6px; border-radius: 4px; }
+  .edit-pill {
+    align-self: flex-start;
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    padding: 0.25rem 0.65rem;
+    border: 1px dashed var(--border); border-radius: 999px;
+    color: var(--muted); font-size: 0.7rem; letter-spacing: 0.18em;
+    text-transform: uppercase; user-select: none;
+  }
+  .topic-right {
+    background: linear-gradient(135deg, #0d1228 0%, #1a2350 100%);
+    padding: 1rem; display: flex; flex-direction: column;
+    align-items: flex-end; justify-content: center; gap: 0.4rem;
+    border-left: 1px solid var(--border);
+  }
+  .now-label { font-family: "Orbitron", monospace; font-size: 0.7rem; letter-spacing: 0.3em; color: var(--muted); }
+  .now-phase {
+    font-family: "Orbitron", monospace; font-weight: 900;
+    font-size: clamp(1rem, 1.6vw, 1.5rem);
+    color: var(--cyan); text-shadow: 0 0 14px rgba(0,245,255,0.6);
+    letter-spacing: 0.15em; text-transform: uppercase; text-align: right;
+  }
+
+  /* ========== ARENA ========== */
+  .arena {
+    display: grid;
+    grid-template-columns: 1.05fr 1.4fr 1.05fr;
+    gap: 1rem;
+    flex: 1;
+    min-height: 0;
+  }
+  .teams-col {
+    display: grid;
+    grid-template-rows: 1fr 1fr;
+    gap: 1rem;
+  }
+
+  /* ========== TEAM CARD ========== */
+  .team {
+    --c: var(--cyan);
+    border-radius: 18px;
+    border: 2px solid var(--c);
+    background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.5));
+    padding: 0.9rem 1.1rem;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    grid-template-rows: auto 1fr auto;
+    gap: 0.5rem 0.8rem;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 0 30px -8px var(--c) inset, 0 0 14px -4px var(--c);
+  }
+  .team::before {
+    content: "";
+    position: absolute; inset: 0;
+    background: radial-gradient(circle at 50% 0%, var(--c), transparent 60%);
+    opacity: 0.10; pointer-events: none;
+  }
+  .team::after {
+    content: "";
+    position: absolute; inset: 0;
+    background: repeating-linear-gradient(135deg, rgba(255,255,255,0.025) 0 2px, transparent 2px 14px);
+    pointer-events: none;
+  }
+  .team[data-color="cyan"]    { --c: var(--cyan); }
+  .team[data-color="magenta"] { --c: var(--magenta); }
+  .team[data-color="lime"]    { --c: var(--lime); }
+  .team[data-color="amber"]   { --c: var(--amber); }
+
+  .team-rank {
+    grid-row: 1; grid-column: 1;
+    width: 40px; height: 40px;
+    display: flex; align-items: center; justify-content: center;
+    border: 2px solid var(--c);
+    border-radius: 10px;
+    font-family: "Orbitron", monospace;
+    font-weight: 900; font-size: 0.85rem;
+    color: var(--c);
+    background: rgba(0,0,0,0.45);
+    text-shadow: 0 0 6px var(--c);
+  }
+  .team-info { grid-row: 1; grid-column: 2; min-width: 0; }
+  .team-name {
+    font-family: "Orbitron", monospace; font-weight: 900;
+    font-size: clamp(1.1rem, 1.7vw, 1.55rem);
+    color: var(--c);
+    text-shadow: 0 0 14px var(--c), 0 0 26px var(--c);
+    letter-spacing: 0.1em;
     line-height: 1;
   }
-  .timer-value.low { color: var(--warn); }
-  .timer-value.zero { color: var(--con); }
-  .timer-controls {
-    display: flex;
-    gap: 0.6rem;
-    justify-content: center;
+  .team-tag {
+    color: var(--muted);
+    font-size: 0.62rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    margin-top: 0.25rem;
   }
-  footer {
-    display: flex;
-    justify-content: space-between;
+  .crown {
+    grid-row: 1; grid-column: 3;
+    font-size: 1.6rem;
+    filter: drop-shadow(0 0 10px var(--amber));
+    opacity: 0; transform: translateY(-6px) scale(0.8);
+    transition: opacity 0.3s, transform 0.3s;
+    align-self: center;
+  }
+  .team.leader .crown { opacity: 1; transform: translateY(0) scale(1); animation: crown-bob 2s ease-in-out infinite; }
+  @keyframes crown-bob {
+    0%, 100% { transform: translateY(0) rotate(-5deg); }
+    50%      { transform: translateY(-4px) rotate(5deg); }
+  }
+
+  .score-block {
+    grid-row: 2; grid-column: 1 / -1;
+    display: flex; align-items: center; justify-content: center;
+    position: relative;
+  }
+  .score-digits {
+    font-family: "Orbitron", monospace; font-weight: 900;
+    font-size: clamp(3.4rem, 6vw, 5.2rem);
+    color: var(--c);
+    text-shadow: 0 0 20px var(--c), 0 0 40px var(--c);
+    line-height: 1; letter-spacing: 0.05em;
+    padding: 0.3rem 1.1rem;
+    border-radius: 12px;
+    background: rgba(0,0,0,0.5);
+    border: 1px solid rgba(255,255,255,0.06);
+    font-variant-numeric: tabular-nums;
+    transition: transform 0.18s;
+  }
+  .score-digits.bump { animation: bump 0.35s ease-out; }
+  @keyframes bump {
+    0%   { transform: scale(1); }
+    40%  { transform: scale(1.18); }
+    100% { transform: scale(1); }
+  }
+
+  .streak {
+    position: absolute;
+    top: 4px; right: 6px;
+    display: inline-flex; align-items: center; gap: 0.2rem;
+    padding: 0.2rem 0.5rem;
+    border-radius: 999px;
+    background: linear-gradient(90deg, #ff6b00, #ff2d6f);
+    color: #fff;
+    font-family: "Orbitron", monospace;
+    font-weight: 800; font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    box-shadow: 0 0 12px rgba(255, 100, 30, 0.7);
+    opacity: 0; transform: scale(0.8);
+    transition: opacity 0.25s, transform 0.25s;
+    pointer-events: none;
+  }
+  .team.has-streak .streak { opacity: 1; transform: scale(1); animation: streak-shake 0.6s ease-in-out infinite; }
+  @keyframes streak-shake {
+    0%, 100% { transform: scale(1) rotate(-2deg); }
+    50%      { transform: scale(1.05) rotate(2deg); }
+  }
+
+  .score-controls {
+    grid-row: 3; grid-column: 1 / -1;
+    display: flex; gap: 0.5rem;
+  }
+  .score-controls button {
+    flex: 1;
+    background: rgba(0,0,0,0.45);
+    color: var(--c);
+    border: 1px solid var(--c);
+    border-radius: 10px;
+    padding: 0.5rem;
+    font-family: "Orbitron", monospace;
+    font-weight: 800; font-size: 0.95rem;
+    cursor: pointer;
+    letter-spacing: 0.08em;
+    transition: background 0.15s, transform 0.05s;
+  }
+  .score-controls button:hover { background: rgba(255,255,255,0.05); }
+  .score-controls button.add {
+    background: var(--c); color: #03061a;
+    box-shadow: 0 0 14px var(--c);
+  }
+  .score-controls button.add:hover { filter: brightness(1.15); }
+  .score-controls button:active { transform: scale(0.96); }
+
+  /* +1 floating particle */
+  .particle {
+    position: absolute;
+    pointer-events: none;
+    font-family: "Orbitron", monospace;
+    font-weight: 900;
+    font-size: 1.6rem;
+    color: var(--c);
+    text-shadow: 0 0 10px var(--c), 0 0 20px var(--c);
+    animation: particle-up 1.1s ease-out forwards;
+    z-index: 5;
+  }
+  @keyframes particle-up {
+    0%   { opacity: 0; transform: translate(-50%, 0) scale(0.6); }
+    20%  { opacity: 1; transform: translate(-50%, -20px) scale(1.2); }
+    100% { opacity: 0; transform: translate(-50%, -100px) scale(1); }
+  }
+
+  /* ========== CENTER STAGE (TIMER) ========== */
+  .center {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 1rem 1.1rem;
+    display: flex; flex-direction: column; gap: 0.8rem;
+  }
+  .mode-tabs { display: grid; grid-template-columns: repeat(5, 1fr); gap: 0.4rem; }
+  .mode-tab {
+    background: rgba(0,0,0,0.4);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 0.5rem 0.3rem;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s;
+  }
+  .mode-tab .time { font-family: "Orbitron", monospace; font-weight: 800; font-size: 0.95rem; }
+  .mode-tab .name { font-family: "Orbitron", monospace; font-size: 0.6rem; letter-spacing: 0.18em; color: var(--muted); text-transform: uppercase; margin-top: 0.2rem; }
+  .mode-tab.active {
+    border-color: var(--cyan);
+    background: rgba(0, 245, 255, 0.1);
+    box-shadow: 0 0 16px rgba(0, 245, 255, 0.3);
+  }
+  .mode-tab.active .time { color: var(--cyan); text-shadow: 0 0 8px rgba(0,245,255,0.6); }
+  .mode-tab.active .name { color: var(--cyan); }
+
+  .timer-stage {
+    flex: 1;
+    display: flex; align-items: center; justify-content: center;
+    position: relative;
+    min-height: 240px;
+  }
+  .ring-wrap { position: relative; width: min(320px, 100%); aspect-ratio: 1; }
+  .ring-wrap svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+  .ring-bg { stroke: rgba(255,255,255,0.06); }
+  .ring-fg {
+    stroke: var(--cyan);
+    transition: stroke-dashoffset 0.95s linear, stroke 0.3s;
+    filter: drop-shadow(0 0 8px rgba(0,245,255,0.6));
+  }
+  .ring-fg.warn { stroke: var(--amber); filter: drop-shadow(0 0 10px rgba(255,170,0,0.6)); }
+  .ring-fg.danger { stroke: var(--red); filter: drop-shadow(0 0 14px rgba(239,68,68,0.7)); }
+  .ring-tick { stroke: rgba(255,255,255,0.08); stroke-width: 1; }
+
+  .timer-display {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.3rem;
+  }
+  .timer-display .digits {
+    font-family: "Orbitron", monospace; font-weight: 900;
+    font-size: clamp(3rem, 6.5vw, 5rem);
+    color: var(--cyan);
+    text-shadow: 0 0 20px rgba(0,245,255,0.7), 0 0 40px rgba(0,245,255,0.5);
+    line-height: 1; letter-spacing: 0.04em;
+    font-variant-numeric: tabular-nums;
+  }
+  .timer-display .digits.warn { color: var(--amber); text-shadow: 0 0 20px rgba(255,170,0,0.7), 0 0 40px rgba(255,170,0,0.5); }
+  .timer-display .digits.danger {
+    color: var(--red);
+    text-shadow: 0 0 20px rgba(239,68,68,0.8), 0 0 40px rgba(239,68,68,0.6);
+    animation: flash 0.7s infinite;
+  }
+  @keyframes flash {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50%      { opacity: 0.55; transform: scale(1.05); }
+  }
+  .timer-display .sub {
+    font-family: "Orbitron", monospace;
+    font-size: 0.72rem; letter-spacing: 0.3em;
+    color: var(--muted); text-transform: uppercase;
+  }
+  .center.danger { animation: stage-flash 0.7s infinite; }
+  @keyframes stage-flash {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+    50%      { box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.4); }
+  }
+
+  .timer-controls { display: flex; gap: 0.5rem; justify-content: center; }
+  .timer-controls button {
+    flex: 1; max-width: 130px;
+    background: rgba(0,0,0,0.45);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 0.65rem;
+    font-family: "Orbitron", monospace;
+    font-weight: 700; letter-spacing: 0.18em;
+    text-transform: uppercase; font-size: 0.78rem;
+    cursor: pointer;
+  }
+  .timer-controls button:hover { background: rgba(255,255,255,0.06); }
+  .timer-controls button.go {
+    background: var(--cyan); color: #03161a;
+    border-color: var(--cyan);
+    box-shadow: 0 0 16px rgba(0,245,255,0.5);
+  }
+  .timer-controls button:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  /* ========== PHASE NAV (FIGHTING-GAME DIAGONAL TABS) ========== */
+  .deck {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
     align-items: center;
     gap: 1rem;
-    flex-wrap: wrap;
-  }
-  .phase-progress {
-    display: flex;
-    gap: 0.5rem;
-    flex-wrap: wrap;
-  }
-  .phase-pill {
-    padding: 0.4rem 0.9rem;
-    border-radius: 999px;
-    background: var(--panel-2);
-    color: var(--muted);
-    font-size: 0.95rem;
-    font-weight: 600;
+    padding: 0.6rem 0.8rem;
+    background: var(--panel);
     border: 1px solid var(--border);
+    border-radius: 14px;
   }
-  .phase-pill.active {
-    background: var(--accent);
-    color: #051018;
-    border-color: var(--accent);
-  }
-  button {
-    background: var(--panel-2);
-    color: var(--text);
-    border: 2px solid var(--border);
-    border-radius: 10px;
-    padding: 0.7rem 1.2rem;
-    font-size: 1.1rem;
-    font-weight: 700;
-    cursor: pointer;
-    font-family: inherit;
-    transition: transform 0.05s, background 0.15s, border-color 0.15s;
-  }
-  button:hover { background: #232c4f; border-color: var(--accent); }
-  button:active { transform: scale(0.97); }
-  button.primary { background: var(--accent); color: #051018; border-color: var(--accent); }
-  button.primary:hover { background: #5dd9f3; }
-  button.danger { border-color: var(--con); color: var(--con); }
-  button.danger:hover { background: #2a1818; }
-  .controls {
+  .fg-tabs {
     display: flex;
-    gap: 0.6rem;
-    flex-wrap: wrap;
+    gap: 0;
+    flex: 1;
+    justify-content: center;
+  }
+  .fg-tab {
+    --tc: var(--cyan);
+    position: relative;
+    margin-left: -14px;
+    padding: 0.7rem 1.6rem 0.7rem 1.9rem;
+    background: rgba(0,0,0,0.5);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-family: "Orbitron", monospace;
+    font-weight: 800;
+    font-size: 0.78rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    cursor: pointer;
+    clip-path: polygon(14px 0, 100% 0, calc(100% - 14px) 100%, 0 100%);
+    transition: color 0.2s, background 0.2s, transform 0.15s;
+    text-align: center;
+    min-width: 110px;
+  }
+  .fg-tab:first-child { margin-left: 0; }
+  .fg-tab:hover { color: var(--text); background: rgba(255,255,255,0.04); transform: translateY(-1px); }
+  .fg-tab.done {
+    color: var(--text);
+    background: rgba(0, 245, 255, 0.08);
+    border-color: rgba(0, 245, 255, 0.3);
+  }
+  .fg-tab.active {
+    color: #03161a;
+    background: linear-gradient(180deg, var(--cyan), #00b8c4);
+    border-color: var(--cyan);
+    box-shadow: 0 0 18px rgba(0, 245, 255, 0.6);
+    z-index: 2;
+    transform: translateY(-2px) scale(1.04);
+    animation: tab-glow 1.6s ease-in-out infinite;
+  }
+  @keyframes tab-glow {
+    0%, 100% { box-shadow: 0 0 14px rgba(0, 245, 255, 0.5); }
+    50%      { box-shadow: 0 0 24px rgba(0, 245, 255, 0.9); }
+  }
+
+  .deck-controls { display: flex; gap: 0.5rem; }
+  .deck-controls button {
+    background: rgba(0,0,0,0.45);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 0.55rem 1rem;
+    font-family: "Orbitron", monospace;
+    font-weight: 700;
+    font-size: 0.78rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    cursor: pointer;
+    clip-path: polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%);
+  }
+  .deck-controls button:hover { background: rgba(255,255,255,0.07); }
+  .deck-controls button.primary {
+    background: linear-gradient(135deg, var(--magenta), var(--purple));
+    color: #fff; border-color: var(--magenta);
+    box-shadow: 0 0 16px rgba(255, 0, 170, 0.5);
+  }
+  .deck-controls button.danger { color: var(--red); border-color: rgba(239,68,68,0.5); }
+
+  @media (max-width: 1100px) {
+    .arena { grid-template-columns: 1fr; }
+    .teams-col { grid-template-columns: 1fr 1fr; grid-template-rows: auto; }
   }
 </style>
 </head>
 <body>
-  <header>
-    <div class="round">Round <span class="num" id="round">1</span> <span style="color: var(--muted);">/ <span id="totalRounds">3</span></span></div>
-    <div class="phase-badge" id="phaseLabel">Preparation</div>
-  </header>
 
-  <div class="scenario">
-    <div class="scenario-label">Scenario / Topic (click to edit)</div>
-    <textarea class="scenario-text" id="scenario" rows="2" spellcheck="false"></textarea>
-  </div>
-
-  <div class="timer-row">
-    <div class="side pro">
-      <div class="side-label">PRO</div>
-      <div class="score" id="proScore">0</div>
-      <div class="score-controls">
-        <button data-side="pro" data-delta="-1">−1</button>
-        <button data-side="pro" data-delta="1" class="primary">+1</button>
+  <!-- HUD -->
+  <header class="hud">
+    <div class="logo">
+      <svg class="logo-mark" viewBox="0 0 64 64" fill="none">
+        <defs>
+          <linearGradient id="hexg" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#00f5ff"/>
+            <stop offset="100%" stop-color="#ff00aa"/>
+          </linearGradient>
+        </defs>
+        <polygon points="32,4 58,18 58,46 32,60 6,46 6,18" stroke="url(#hexg)" stroke-width="3" fill="rgba(0,245,255,0.08)"/>
+        <polygon points="32,14 50,24 50,42 32,52 14,42 14,24" stroke="#00f5ff" stroke-width="1.2" fill="none" opacity="0.7"/>
+        <text x="32" y="38" text-anchor="middle" font-family="Orbitron" font-weight="900" font-size="18" fill="#00f5ff">D</text>
+      </svg>
+      <div class="logo-text">
+        <div class="title">DEBATE ARENA</div>
+        <div class="sub">Season 26 · Room 204</div>
       </div>
     </div>
 
-    <div class="timer">
-      <div class="timer-label">Time Remaining</div>
-      <div class="timer-value" id="timerValue">3:00</div>
+    <div class="badge-match"><span class="pulse-dot"></span> Match in Progress</div>
+
+    <div class="hype">
+      <span class="label">HYPE</span>
+      <div class="hype-bar"><div id="hypeBar" style="width: 0%"></div></div>
+      <span class="pct" id="hypePct">0%</span>
+    </div>
+
+    <div class="clock">
+      <span class="label">CLOCK</span>
+      <span class="value" id="wallClock">00:00:00</span>
+    </div>
+
+    <div class="round-readout">
+      <span class="lbl">Round</span>
+      <span class="num" id="roundNum">1</span>
+      <span class="total">/ <span id="roundTotal">3</span></span>
+    </div>
+  </header>
+
+  <!-- TOPIC -->
+  <section class="topic">
+    <div class="topic-left">
+      <div class="live-tag"><span class="dot"></span> LIVE · MOTION</div>
+    </div>
+    <div class="topic-center">
+      <textarea class="topic-text" id="scenario" rows="2" spellcheck="false"></textarea>
+      <span class="edit-pill">✎ click to edit</span>
+    </div>
+    <div class="topic-right">
+      <div class="now-label">NOW</div>
+      <div class="now-phase" id="nowPhase">PREPARATION</div>
+    </div>
+  </section>
+
+  <!-- ARENA -->
+  <main class="arena">
+    <div class="teams-col" id="teamsLeft"></div>
+    <section class="center" id="timerStage">
+      <div class="mode-tabs" id="modeTabs"></div>
+      <div class="timer-stage">
+        <div class="ring-wrap">
+          <svg viewBox="0 0 200 200">
+            <circle class="ring-bg" cx="100" cy="100" r="88" stroke-width="8" fill="none"/>
+            <circle id="ringFg" class="ring-fg" cx="100" cy="100" r="88" stroke-width="8" fill="none"
+                    stroke-dasharray="552.92" stroke-dashoffset="0" stroke-linecap="round"/>
+            <g id="ringTicks"></g>
+          </svg>
+          <div class="timer-display">
+            <div class="digits" id="timerDigits">3:00</div>
+            <div class="sub" id="timerSub">PREPARATION</div>
+          </div>
+        </div>
+      </div>
       <div class="timer-controls">
-        <button id="btnStart" class="primary">Start</button>
+        <button id="btnStart" class="go">Start</button>
         <button id="btnPause">Pause</button>
         <button id="btnReset">Reset</button>
       </div>
-    </div>
+    </section>
+    <div class="teams-col" id="teamsRight"></div>
+  </main>
 
-    <div class="side con">
-      <div class="side-label">CON</div>
-      <div class="score" id="conScore">0</div>
-      <div class="score-controls">
-        <button data-side="con" data-delta="-1">−1</button>
-        <button data-side="con" data-delta="1" class="primary">+1</button>
-      </div>
-    </div>
-  </div>
-
-  <footer>
-    <div class="phase-progress" id="phaseProgress"></div>
-    <div class="controls">
-      <button id="btnPrev">◀ Prev Phase</button>
-      <button id="btnNext" class="primary">Next Phase ▶</button>
-      <button id="btnReload" class="danger">Reset Game</button>
+  <!-- DECK with diagonal-cut phase tabs -->
+  <footer class="deck">
+    <div></div>
+    <div class="fg-tabs" id="fgTabs"></div>
+    <div class="deck-controls">
+      <button id="btnPrev">◀ Prev</button>
+      <button id="btnNext" class="primary">Next ▶</button>
+      <button id="btnResetGame" class="danger">Reset</button>
     </div>
   </footer>
 
 <script>
   let lastState = null;
-  let pollHandle = null;
+  let prevScores = null;
+  const RING_C = 2 * Math.PI * 88;
+
+  const TEAM_COLOR_MAP = {
+    aqua:    'cyan',
+    atlas:   'magenta',
+    viper:   'lime',
+    phoenix: 'amber',
+  };
+  const TEAM_RANK_LABELS = ['1st', '2nd', '3rd', '4th'];
+
+  // Build ring tick marks
+  const ticks = document.getElementById('ringTicks');
+  for (let i = 0; i < 60; i++) {
+    const a = (i / 60) * Math.PI * 2;
+    const x1 = 100 + Math.cos(a) * 78;
+    const y1 = 100 + Math.sin(a) * 78;
+    const x2 = 100 + Math.cos(a) * (i % 5 === 0 ? 70 : 74);
+    const y2 = 100 + Math.sin(a) * (i % 5 === 0 ? 70 : 74);
+    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    line.setAttribute('x1', x1); line.setAttribute('y1', y1);
+    line.setAttribute('x2', x2); line.setAttribute('y2', y2);
+    line.setAttribute('class', 'ring-tick');
+    ticks.appendChild(line);
+  }
 
   async function api(path, opts = {}) {
     const res = await fetch(path, {
@@ -275,90 +705,228 @@
     const sec = s % 60;
     return `${m}:${sec.toString().padStart(2, '0')}`;
   }
+  function pad2(n) { return n.toString().padStart(2, '0'); }
 
-  function render(s) {
-    lastState = s;
-    document.getElementById('round').textContent = s.round;
-    document.getElementById('totalRounds').textContent = s.totalRounds;
-    document.getElementById('phaseLabel').textContent = s.phase.label;
-    document.getElementById('proScore').textContent = s.scores.pro;
-    document.getElementById('conScore').textContent = s.scores.con;
-
-    const ta = document.getElementById('scenario');
-    if (document.activeElement !== ta) {
-      ta.value = s.scenario;
-      autoSize(ta);
-    }
-
-    const tv = document.getElementById('timerValue');
-    tv.textContent = fmtTime(s.timer.remaining);
-    tv.classList.toggle('low', s.timer.remaining <= 10 && s.timer.remaining > 0);
-    tv.classList.toggle('zero', s.timer.remaining === 0);
-
-    const pp = document.getElementById('phaseProgress');
-    pp.innerHTML = '';
-    s.phases.forEach((p, i) => {
-      const pill = document.createElement('div');
-      pill.className = 'phase-pill' + (i === s.phaseIndex ? ' active' : '');
-      pill.textContent = p.label;
-      pp.appendChild(pill);
-    });
-
-    document.getElementById('btnStart').disabled = s.timer.running;
-    document.getElementById('btnPause').disabled = !s.timer.running;
+  function tickWallClock() {
+    const d = new Date();
+    document.getElementById('wallClock').textContent =
+      `${pad2(d.getHours())}:${pad2(d.getMinutes())}:${pad2(d.getSeconds())}`;
   }
+  setInterval(tickWallClock, 1000);
+  tickWallClock();
 
   function autoSize(ta) {
     ta.style.height = 'auto';
     ta.style.height = ta.scrollHeight + 'px';
   }
 
+  function buildTeamCards(s) {
+    const left = document.getElementById('teamsLeft');
+    const right = document.getElementById('teamsRight');
+    left.innerHTML = '';
+    right.innerHTML = '';
+
+    const ranked = [...s.teams].sort((a, b) => s.scores[b.key] - s.scores[a.key]);
+    const rankByKey = {};
+    ranked.forEach((t, i) => { rankByKey[t.key] = i; });
+
+    const maxScore = Math.max(...Object.values(s.scores));
+    const leaders = s.teams.filter(t => s.scores[t.key] === maxScore && maxScore > 0);
+
+    s.teams.forEach((t, idx) => {
+      const card = document.createElement('div');
+      card.className = 'team';
+      card.dataset.team = t.key;
+      card.dataset.color = TEAM_COLOR_MAP[t.key];
+
+      const isLeader = leaders.length === 1 && leaders[0].key === t.key;
+      if (isLeader) card.classList.add('leader');
+
+      const streak = s.streaks[t.key] || 0;
+      if (streak >= 2) card.classList.add('has-streak');
+
+      card.innerHTML = `
+        <div class="team-rank">${TEAM_RANK_LABELS[rankByKey[t.key]]}</div>
+        <div class="team-info">
+          <div class="team-name">${t.name}</div>
+          <div class="team-tag">${t.tag}</div>
+        </div>
+        <div class="crown" title="Leader">👑</div>
+        <div class="score-block">
+          <div class="score-digits" id="score-${t.key}">${pad2(s.scores[t.key])}</div>
+          <div class="streak">🔥 ${streak}</div>
+        </div>
+        <div class="score-controls">
+          <button data-team="${t.key}" data-delta="-1">−1</button>
+          <button class="add" data-team="${t.key}" data-delta="1">+1</button>
+        </div>
+      `;
+      // Distribute: indices 0,1 left; 2,3 right
+      (idx < 2 ? left : right).appendChild(card);
+    });
+
+    // Bind score buttons
+    document.querySelectorAll('[data-team]').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const team = btn.dataset.team;
+        const delta = parseInt(btn.dataset.delta, 10);
+        render(await api('/api/score', { method: 'POST', body: { team, delta } }));
+      });
+    });
+  }
+
+  function spawnParticle(teamKey, delta) {
+    const card = document.querySelector(`.team[data-team="${teamKey}"]`);
+    if (!card) return;
+    const el = document.createElement('div');
+    el.className = 'particle';
+    el.textContent = (delta > 0 ? '+' : '') + delta;
+    el.style.left = '50%';
+    el.style.top = '52%';
+    card.appendChild(el);
+    setTimeout(() => el.remove(), 1100);
+
+    const digits = card.querySelector('.score-digits');
+    if (digits) {
+      digits.classList.remove('bump');
+      void digits.offsetWidth;
+      digits.classList.add('bump');
+    }
+  }
+
+  function detectScoreChanges(s) {
+    if (!prevScores) { prevScores = { ...s.scores }; return; }
+    for (const k of Object.keys(s.scores)) {
+      const diff = s.scores[k] - (prevScores[k] || 0);
+      if (diff !== 0) spawnParticle(k, diff);
+    }
+    prevScores = { ...s.scores };
+  }
+
+  function render(s) {
+    const isFirst = !lastState;
+    lastState = s;
+
+    // Round
+    document.getElementById('roundNum').textContent = s.round;
+    document.getElementById('roundTotal').textContent = s.totalRounds;
+
+    // Phase
+    document.getElementById('nowPhase').textContent = s.phase.label.toUpperCase();
+    document.getElementById('timerSub').textContent = s.phase.label.toUpperCase();
+
+    // Topic
+    const ta = document.getElementById('scenario');
+    if (document.activeElement !== ta) {
+      ta.value = s.scenario;
+      autoSize(ta);
+    }
+
+    // Teams
+    buildTeamCards(s);
+    if (!isFirst) detectScoreChanges(s);
+    else prevScores = { ...s.scores };
+
+    // Mode tabs
+    const tabs = document.getElementById('modeTabs');
+    tabs.innerHTML = '';
+    s.phases.forEach((p, i) => {
+      const el = document.createElement('div');
+      el.className = 'mode-tab' + (i === s.phaseIndex ? ' active' : '');
+      el.innerHTML = `<div class="time">${fmtTime(p.seconds)}</div><div class="name">${p.label}</div>`;
+      el.addEventListener('click', () => goToPhase(i));
+      tabs.appendChild(el);
+    });
+
+    // FG diagonal-cut phase tabs
+    const fgTabs = document.getElementById('fgTabs');
+    fgTabs.innerHTML = '';
+    s.phases.forEach((p, i) => {
+      const el = document.createElement('button');
+      let cls = 'fg-tab';
+      if (i === s.phaseIndex) cls += ' active';
+      else if (i < s.phaseIndex) cls += ' done';
+      el.className = cls;
+      el.textContent = p.label;
+      el.addEventListener('click', () => goToPhase(i));
+      fgTabs.appendChild(el);
+    });
+
+    // Timer
+    updateTimerVisual(s.timer.remaining, s.phase.seconds);
+
+    // Hype based on total scores + round progression
+    const total = Object.values(s.scores).reduce((a, b) => a + b, 0);
+    const hype = Math.min(100, total * 5 + (s.round - 1) * 12 + (s.timer.running ? 8 : 0));
+    document.getElementById('hypeBar').style.width = hype + '%';
+    document.getElementById('hypePct').textContent = hype + '%';
+
+    document.getElementById('btnStart').disabled = s.timer.running;
+    document.getElementById('btnPause').disabled = !s.timer.running;
+  }
+
+  function updateTimerVisual(remaining, duration) {
+    const digits = document.getElementById('timerDigits');
+    const ring = document.getElementById('ringFg');
+    const stage = document.getElementById('timerStage');
+
+    digits.textContent = fmtTime(remaining);
+
+    const pct = duration > 0 ? remaining / duration : 0;
+    const offset = RING_C * (1 - pct);
+    ring.setAttribute('stroke-dashoffset', offset);
+
+    digits.classList.remove('warn', 'danger');
+    ring.classList.remove('warn', 'danger');
+    stage.classList.remove('danger');
+
+    if (remaining <= 10 && remaining > 0) {
+      digits.classList.add('danger');
+      ring.classList.add('danger');
+      stage.classList.add('danger');
+    } else if (pct < 0.4) {
+      digits.classList.add('warn');
+      ring.classList.add('warn');
+    }
+  }
+
   async function refresh() {
-    try {
-      const s = await api('/api/state');
-      render(s);
-    } catch (e) { console.error(e); }
+    try { render(await api('/api/state')); } catch (e) { console.error(e); }
   }
 
-  function startLocalTick() {
-    if (pollHandle) clearInterval(pollHandle);
-    pollHandle = setInterval(() => {
-      if (!lastState) return;
-      if (lastState.timer.running && lastState.timer.remaining > 0) {
-        lastState.timer.remaining -= 1;
-        render(lastState);
-        if (lastState.timer.remaining === 0) refresh();
-      }
-    }, 1000);
+  async function goToPhase(target) {
+    if (!lastState) return;
+    let cur = lastState.phaseIndex;
+    while (cur !== target) {
+      if (target > cur) { await api('/api/phase/next', { method: 'POST' }); cur++; }
+      else { await api('/api/phase/prev', { method: 'POST' }); cur--; }
+    }
+    refresh();
   }
 
-  document.getElementById('btnNext').addEventListener('click', async () => {
-    render(await api('/api/phase/next', { method: 'POST' }));
-  });
-  document.getElementById('btnPrev').addEventListener('click', async () => {
-    render(await api('/api/phase/prev', { method: 'POST' }));
-  });
-  document.getElementById('btnStart').addEventListener('click', async () => {
-    render(await api('/api/timer/start', { method: 'POST' }));
-  });
-  document.getElementById('btnPause').addEventListener('click', async () => {
-    render(await api('/api/timer/pause', { method: 'POST' }));
-  });
-  document.getElementById('btnReset').addEventListener('click', async () => {
-    render(await api('/api/timer/reset', { method: 'POST' }));
-  });
-  document.getElementById('btnReload').addEventListener('click', async () => {
+  // Local countdown between server polls
+  setInterval(() => {
+    if (!lastState || !lastState.timer.running) return;
+    if (lastState.timer.remaining > 0) {
+      lastState.timer.remaining -= 1;
+      updateTimerVisual(lastState.timer.remaining, lastState.phase.seconds);
+      if (lastState.timer.remaining === 0) refresh();
+    }
+  }, 1000);
+
+  setInterval(refresh, 5000);
+
+  // Bindings
+  document.getElementById('btnNext').addEventListener('click', async () => render(await api('/api/phase/next', { method: 'POST' })));
+  document.getElementById('btnPrev').addEventListener('click', async () => render(await api('/api/phase/prev', { method: 'POST' })));
+  document.getElementById('btnStart').addEventListener('click', async () => render(await api('/api/timer/start', { method: 'POST' })));
+  document.getElementById('btnPause').addEventListener('click', async () => render(await api('/api/timer/pause', { method: 'POST' })));
+  document.getElementById('btnReset').addEventListener('click', async () => render(await api('/api/timer/reset', { method: 'POST' })));
+  document.getElementById('btnResetGame').addEventListener('click', async () => {
     if (confirm('Reset entire game?')) {
+      prevScores = null;
       render(await api('/api/reset', { method: 'POST' }));
     }
-  });
-
-  document.querySelectorAll('[data-side]').forEach(btn => {
-    btn.addEventListener('click', async () => {
-      const side = btn.dataset.side;
-      const delta = parseInt(btn.dataset.delta, 10);
-      render(await api('/api/score', { method: 'POST', body: { side, delta } }));
-    });
   });
 
   const scenarioEl = document.getElementById('scenario');
@@ -375,18 +943,13 @@
     if (document.activeElement === scenarioEl) return;
     if (e.key === ' ') {
       e.preventDefault();
-      const btn = lastState && lastState.timer.running ? 'btnPause' : 'btnStart';
-      document.getElementById(btn).click();
-    } else if (e.key === 'ArrowRight') {
-      document.getElementById('btnNext').click();
-    } else if (e.key === 'ArrowLeft') {
-      document.getElementById('btnPrev').click();
-    }
+      const id = lastState && lastState.timer.running ? 'btnPause' : 'btnStart';
+      document.getElementById(id).click();
+    } else if (e.key === 'ArrowRight') document.getElementById('btnNext').click();
+    else if (e.key === 'ArrowLeft') document.getElementById('btnPrev').click();
   });
 
   refresh();
-  setInterval(refresh, 5000);
-  startLocalTick();
 </script>
 </body>
 </html>
