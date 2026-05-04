@@ -41,9 +41,11 @@
       var(--bg);
     min-height: 100vh;
     padding: 1.2vh 1.4vw;
+    padding-bottom: calc(1.2vh + 72px);
     display: flex;
     flex-direction: column;
     gap: 1vh;
+    position: relative;
   }
 
   /* ========== HUD ========== */
@@ -513,18 +515,27 @@
   }
   .timer-controls button:disabled { opacity: 0.4; cursor: not-allowed; }
 
-  /* ========== PHASE NAV (FIGHTING-GAME DIAGONAL TABS) ========== */
+  /* ========== PHASE NAV (FIGHTING-GAME DIAGONAL TABS) ==========
+     Pulled out of .center's flow with position:absolute so it sits
+     as a full-width row anchored to the bottom of <body>, below all
+     four team cards. body has padding-bottom that reserves room for
+     it so the arena content can never overlap.
+  */
   .deck {
+    position: absolute;
+    left: 1.4vw;
+    right: 1.4vw;
+    bottom: 1.2vh;
     display: grid;
     grid-template-columns: 1fr auto;
     align-items: center;
     gap: 1rem;
     padding: 0.6rem 0.9rem;
-    background: rgba(0,0,0,0.35);
+    background: var(--panel);
     border: 1px solid var(--border);
-    border-radius: 12px;
-    width: 100%;
-    margin-top: auto;
+    border-radius: 14px;
+    margin-top: 0;
+    z-index: 10;
   }
   .fg-tabs {
     display: flex;
