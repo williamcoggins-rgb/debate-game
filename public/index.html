@@ -399,10 +399,13 @@
     border: 1px solid var(--border);
     border-radius: 18px;
     padding: 1rem 1.1rem;
-    display: flex; flex-direction: column; gap: 0.8rem;
-    min-height: 300px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.8rem;
+    min-height: 520px;
   }
-  .mode-tabs { display: grid; grid-template-columns: repeat(5, 1fr); gap: 0.4rem; }
+  .mode-tabs { display: grid; grid-template-columns: repeat(5, 1fr); gap: 0.4rem; width: 100%; }
   .mode-tab {
     background: rgba(0,0,0,0.4);
     border: 1px solid var(--border);
@@ -423,12 +426,13 @@
   .mode-tab.active .name { color: var(--cyan); }
 
   .timer-stage {
-    flex: 1;
     display: flex; align-items: center; justify-content: center;
     position: relative;
-    min-height: 280px;
+    min-height: 320px;
+    padding: 20px 0;
+    width: 100%;
   }
-  .ring-wrap { position: relative; width: min(260px, 100%); height: min(260px, 100%); aspect-ratio: 1; }
+  .ring-wrap { position: relative; width: 260px; height: 260px; }
   .ring-wrap svg { width: 100%; height: 100%; transform: rotate(-90deg); }
   .ring-bg { stroke: rgba(255,255,255,0.06); }
   .ring-fg {
@@ -473,7 +477,7 @@
     50%      { box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.4); }
   }
 
-  .timer-controls { display: flex; gap: 0.5rem; justify-content: center; }
+  .timer-controls { display: flex; gap: 0.5rem; justify-content: center; width: 100%; }
   .timer-controls button {
     flex: 1; max-width: 130px;
     background: rgba(0,0,0,0.45);
@@ -501,12 +505,11 @@
     align-items: center;
     gap: 1rem;
     padding: 0.6rem 0.9rem;
-    background: var(--panel);
+    background: rgba(0,0,0,0.35);
     border: 1px solid var(--border);
-    border-radius: 14px;
-    margin-top: 1.5rem;
-    position: relative;
-    z-index: 2;
+    border-radius: 12px;
+    width: 100%;
+    margin-top: auto;
   }
   .fg-tabs {
     display: flex;
@@ -662,20 +665,18 @@
         <button id="btnPause">Pause</button>
         <button id="btnReset">Reset</button>
       </div>
+      <footer class="deck">
+        <div class="fg-tabs" id="fgTabs"></div>
+        <div class="deck-controls">
+          <button id="btnPrev">◀ Prev</button>
+          <button id="btnNext" class="primary">Next ▶</button>
+          <button id="btnResetGame" class="danger">Reset</button>
+        </div>
+      </footer>
     </section>
 
     <div class="teams-row" id="teamsRow"></div>
   </main>
-
-  <!-- DECK: full-width bottom row, separate from arena -->
-  <footer class="deck">
-    <div class="fg-tabs" id="fgTabs"></div>
-    <div class="deck-controls">
-      <button id="btnPrev">◀ Prev</button>
-      <button id="btnNext" class="primary">Next ▶</button>
-      <button id="btnResetGame" class="danger">Reset</button>
-    </div>
-  </footer>
 
 <script>
   let lastState = null;
