@@ -205,7 +205,7 @@
   /* ========== ARENA ========== */
   .arena {
     display: grid;
-    grid-template-columns: minmax(240px, 1fr) auto minmax(240px, 1fr);
+    grid-template-columns: minmax(180px, 1fr) minmax(0, 1fr) minmax(180px, 1fr);
     grid-template-rows: 1fr 1fr;
     align-items: center;
     gap: 0.75rem 1rem;
@@ -407,6 +407,7 @@
     align-items: center;
     gap: 0.8rem;
     min-height: 520px;
+    min-width: 0;
   }
   .mode-tabs { display: grid; grid-template-columns: repeat(5, 1fr); gap: 0.4rem; width: 100%; }
   .mode-tab {
